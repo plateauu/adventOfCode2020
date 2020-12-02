@@ -54,9 +54,9 @@ class App {
 
     private static void processElements(int i, int k) {
         if (i + k == 2020) {
-            System.out.printf("Pair of %d,%d sums to 2020", i, k);
+            System.out.printf("Pair of %d,%d sums to 2020%n", i, k);
             int multiply = i * k;
-            System.out.printf("Result of multiplication is: $d", multiply);
+            System.out.printf("Result of multiplication is: %d%n", multiply);
         }
     }
 }
