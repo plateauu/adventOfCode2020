@@ -26,15 +26,20 @@ import java.util.stream.Collectors;
  */
 
 class App {
-    public static void main(String[] args) {
+    static List<Integer> lines;
+
+    static {
         Path path = Paths.get("src/main/java/dev/insidemind/advent/day1/inputs.txt");
-        List<Integer> lines = readAllLines(path);
+        lines = readAllLines(path);
+    }
+
+    public static void main(String[] args) {
         int size = lines.size();
         for (int i : lines) {
-            for (int k = lines.indexOf(i); k < size - 1; k++) {
-                Integer second = lines.get(k);
+            for (int secondIdx = lines.indexOf(i); secondIdx < size - 1; secondIdx++) {
+                Integer second = lines.get(secondIdx);
 //                System.out.printf("Processing numbers: (%d;%d)%n", i, second);
-                processElements(i, second);
+                processElements(i, second, secondIdx);
             }
         }
     }
@@ -53,12 +58,22 @@ class App {
         return lines;
     }
 
-    private static void processElements(int i, int k) {
-        if (i + k == 2020) {
-            System.out.printf("Pair of %d,%d sums to 2020%n", i, k);
-            int multiply = i * k;
+    private static void processElements(int first, int second, int secondIdx) {
+        if (first + second == 2020) {
+            System.out.printf("Pair of %d,%d sums to 2020%n", first, second);
+            int multiply = first * second;
             System.out.printf("Result of multiplication is: %d%n", multiply);
+        } else {
+            for (int k = secondIdx; k < lines.size() - 1; k++) {
+                int third = lines.get(k);
+                if (first + second + third == 2020) {
+                    System.out.printf("Sum of three %d,%d,%d sums to 2020%n", first, second, third);
+                    int multiply = first * second * third;
+                    System.out.printf("Result of multiplication of three is: %d%n", multiply);
+                }
+            }
         }
+
     }
 }
 
