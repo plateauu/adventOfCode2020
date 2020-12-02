@@ -1,6 +1,5 @@
 package dev.insidemind.advent.day1;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,7 +32,9 @@ class App {
         int size = lines.size();
         for (int i : lines) {
             for (int k = lines.indexOf(i); k < size - 1; k++) {
-                processElements(i, k);
+                Integer second = lines.get(k);
+//                System.out.printf("Processing numbers: (%d;%d)%n", i, second);
+                processElements(i, second);
             }
         }
     }
