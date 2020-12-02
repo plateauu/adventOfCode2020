@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  */
 
 class App {
+    static final int YEAR = 2020;
     static List<Integer> lines;
 
     static {
@@ -38,7 +39,6 @@ class App {
         for (int i : lines) {
             for (int secondIdx = lines.indexOf(i); secondIdx < size - 1; secondIdx++) {
                 Integer second = lines.get(secondIdx);
-//                System.out.printf("Processing numbers: (%d;%d)%n", i, second);
                 processElements(i, second, secondIdx);
             }
         }
@@ -59,14 +59,14 @@ class App {
     }
 
     private static void processElements(int first, int second, int secondIdx) {
-        if (first + second == 2020) {
+        if (first + second == YEAR) {
             System.out.printf("Pair of %d,%d sums to 2020%n", first, second);
             int multiply = first * second;
             System.out.printf("Result of multiplication is: %d%n", multiply);
         } else {
             for (int k = secondIdx; k < lines.size() - 1; k++) {
                 int third = lines.get(k);
-                if (first + second + third == 2020) {
+                if (first + second + third == YEAR) {
                     System.out.printf("Sum of three %d,%d,%d sums to 2020%n", first, second, third);
                     int multiply = first * second * third;
                     System.out.printf("Result of multiplication of three is: %d%n", multiply);
@@ -75,7 +75,4 @@ class App {
         }
 
     }
-}
-
-record Pair<T, K>(T first, K second) {
 }
