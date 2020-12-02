@@ -43,7 +43,8 @@ class App {
                 int idx = lines.indexOf(i);
                 for (int k = idx; k < size - 1; k++) {
                     if (i + k == 2020) {
-                        results.add(new Pair<>(i, k));
+                        Pair<Integer, Integer> pair = new Pair<>(i, k);
+                        results.add(pair);
                         System.out.printf("Pair of %d,%d sums to 2020", i,k);
                     }
                 }
