@@ -78,7 +78,7 @@ class App {
             return occurrences.validate(hits);
         }
 
-        private record OccurrenceRange(int min, int max) {
+        record OccurrenceRange(int min, int max) {
             boolean validate(int counts) {
                 return counts >= min && counts <= max;
             }
