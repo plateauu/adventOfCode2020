@@ -11,8 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *  Day 2 Advent od code 2020
- *  https://adventofcode.com/2020/day/2
+ * Day 2 Advent od code 2020
+ * https://adventofcode.com/2020/day/2
  */
 class App {
     static List<PasswordLine> lines;
@@ -37,6 +37,7 @@ class App {
         System.out.printf("Time spend for %s: %dms%n", type, time);
         System.out.printf("Invalid passwords for %s hits: %d%n", type, hits);
     }
+
     static class PasswordLine {
         private static final String REGEX = "((\\d{1,2}-\\d{1,2} [a-z]): ([a-zA-Z]+))";
         private static final Pattern PATTERN = Pattern.compile(REGEX);
