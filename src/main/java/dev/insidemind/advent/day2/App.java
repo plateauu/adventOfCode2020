@@ -46,7 +46,7 @@ class App {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         var hits = lines.stream()
-                        .map(PasswordLine::validate)
+                        .filter(PasswordLine::validate)
                         .count();
         long stop = System.currentTimeMillis();
         var time = stop - start;
@@ -78,7 +78,7 @@ class App {
             return occurrences.validate(hits);
         }
 
-        record OccurrenceRange(int min, int max) {
+        private record OccurrenceRange(int min, int max) {
             boolean validate(int counts) {
                 return counts >= min && counts <= max;
             }
