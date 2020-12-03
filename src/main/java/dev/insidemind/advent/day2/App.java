@@ -36,15 +36,22 @@ import java.util.regex.Pattern;
  * How many passwords are valid according to their policies?
  */
 class App {
-    static List<Integer> lines;
+    static List<PasswordLine> lines;
 
     static {
         Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day2/inputs.txt");
-        lines = LinesReader.readAllLines(INPUT, Integer::parseInt);
+        lines = LinesReader.readAllLines(INPUT, PasswordLine::new);
     }
 
     public static void main(String[] args) {
-//        new PasswordLine()
+        long start = System.currentTimeMillis();
+        var hits = lines.stream()
+                        .map(PasswordLine::validate)
+                        .count();
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
+        System.out.printf("Invalid passwords hits: %d%n", hits);
     }
 
     static class PasswordLine {
