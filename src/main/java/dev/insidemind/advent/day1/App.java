@@ -1,11 +1,9 @@
 package dev.insidemind.advent.day1;
 
-import java.nio.file.Files;
+import dev.insidemind.advent.LinesReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Before you leave, the Elves in accounting just need you to fix your expense report (your puzzle input);
@@ -28,13 +26,10 @@ import java.util.stream.Collectors;
 class App {
     static final int YEAR = 2020;
     static List<Integer> lines;
-
-    static {
-        Path path = Paths.get("src/main/java/dev/insidemind/advent/day1/inputs.txt");
-        lines = readAllLines(path);
-    }
+    static final Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day1/inputs.txt");
 
     public static void main(String[] args) {
+        lines = LinesReader.readAllLines(INPUT, Integer::parseInt);
         int size = lines.size();
         for (int i : lines) {
             for (int secondIdx = lines.indexOf(i); secondIdx < size - 1; secondIdx++) {
@@ -42,20 +37,6 @@ class App {
                 processElements(i, second, secondIdx);
             }
         }
-    }
-
-    private static List<Integer> readAllLines(Path path) {
-        List<Integer> lines = null;
-        try {
-            lines = Files.readAllLines(path)
-                         .stream()
-                         .map(Integer::parseInt)
-                         .collect(Collectors.toUnmodifiableList());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        Objects.requireNonNull(lines);
-        return lines;
     }
 
     private static void processElements(int first, int second, int secondIdx) {
