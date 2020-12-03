@@ -1,5 +1,7 @@
 package dev.insidemind.advent.day2;
 
+import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.POSITION;
+import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.REPETITIONS;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,20 +35,38 @@ class AppTest {
     }
 
     @Test
-    void shouldFindInvalidPassword() {
+    void shouldFindInvalidPasswordRegardingToRepetition() {
         String input = "1-3 b: cdefg";
         App.PasswordLine passwordLine = new App.PasswordLine(input);
 
         //then
-        Assertions.assertFalse(passwordLine.validate());
+        Assertions.assertFalse(passwordLine.validate(REPETITIONS));
     }
 
     @Test
-    void shouldFindValidPassword() {
+    void shouldFindValidPasswordRegardingToRepetition() {
         String input = "1-3 a: abcde";
         App.PasswordLine passwordLine = new App.PasswordLine(input);
 
         //then
-        Assertions.assertTrue(passwordLine.validate());
+        Assertions.assertTrue(passwordLine.validate(REPETITIONS));
+    }
+
+    @Test
+    void shouldFindInvalidPasswordRegardingToItsPosition() {
+        String input = "1-3 b: cdefg";
+        App.PasswordLine passwordLine = new App.PasswordLine(input);
+
+        //then
+        Assertions.assertFalse(passwordLine.validate(POSITION));
+    }
+
+    @Test
+    void shouldFindValidPasswordRegardingToItsPosition() {
+        String input = "1-3 a: abcde";
+        App.PasswordLine passwordLine = new App.PasswordLine(input);
+
+        //then
+        Assertions.assertTrue(passwordLine.validate(REPETITIONS));
     }
 }

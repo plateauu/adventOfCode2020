@@ -1,5 +1,8 @@
 package dev.insidemind.advent.day2;
 
+import static dev.insidemind.advent.day2.App.PasswordLine.*;
+import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.*;
+
 import dev.insidemind.advent.LinesReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,7 +49,7 @@ class App {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         var hits = lines.stream()
-                        .filter(PasswordLine::validate)
+                        .filter(line -> line.validate(REPETITIONS))
                         .count();
         long stop = System.currentTimeMillis();
         var time = stop - start;
@@ -58,7 +61,7 @@ class App {
         private static final String REGEX = "((\\d{1,2}-\\d{1,2} [a-z]): ([a-zA-Z]+))";
         private static final Pattern PATTERN = Pattern.compile(REGEX);
 
-        OccurrenceRange occurrences;
+        OccurrenceValidator occurrences;
         char requiredLetter;
         char[] password;
 
@@ -68,7 +71,15 @@ class App {
             extractRequirements(matcher);
         }
 
-        boolean validate() {
+        boolean validate(ValidateType type) {
+            return validateRepetitions();
+        }
+
+        enum ValidateType{
+            REPETITIONS, POSITION
+        }
+
+        private boolean validateRepetitions() {
             var hits = 0;
             for (var i : password) {
                 if (i == requiredLetter) {
@@ -78,7 +89,13 @@ class App {
             return occurrences.validate(hits);
         }
 
-        record OccurrenceRange(int min, int max) {
+        record OccurrenceValidator(int min, int max) {
+            boolean validate(int counts) {
+                return counts >= min && counts <= max;
+            }
+        }
+
+        record PositionValidator(int min, int max) {
             boolean validate(int counts) {
                 return counts >= min && counts <= max;
             }
@@ -93,7 +110,7 @@ class App {
             String[] sub = requirements.split("\s");
             requiredLetter = sub[1].toCharArray()[0];
             var o = sub[0].split("-");
-            occurrences = new OccurrenceRange(
+            occurrences = new OccurrenceValidator(
                     Integer.parseInt(o[0]), Integer.parseInt(o[1])
             );
         }
