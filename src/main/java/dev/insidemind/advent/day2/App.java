@@ -44,15 +44,14 @@ class App {
     }
 
     public static void main(String[] args) {
-
+//        new PasswordLine()
     }
 
     static class PasswordLine {
-        private static final String regex = "((\\d-\\d [a-z]): ([a-zA-Z]+))";
-        private static final Pattern pattern = Pattern.compile(regex);
+        private static final String REGEX = "((\\d-\\d [a-z]): ([a-zA-Z]+))";
+        private static final Pattern PATTERN = Pattern.compile(REGEX);
 
-        int maxOccurrence;
-        int minOccurrence;
+        OccurrenceRange occurrences;
         char requiredLetter;
         char[] password;
 
@@ -60,6 +59,22 @@ class App {
             Matcher matcher = getMatcher(passwordLine);
             extractPassword(matcher);
             extractRequirements(matcher);
+        }
+
+        boolean validate() {
+            var hits = 0;
+            for (var i : password) {
+                if (i == requiredLetter) {
+                    hits++;
+                }
+            }
+            return occurrences.validate(hits);
+        }
+
+        record OccurrenceRange(int min, int max) {
+            boolean validate(int counts) {
+                return counts >= min && counts <= max;
+            }
         }
 
         private void extractPassword(Matcher matcher) {
@@ -70,12 +85,14 @@ class App {
             var requirements = matcher.group(2);
             String[] sub = requirements.split("\s");
             requiredLetter = sub[1].toCharArray()[0];
-            minOccurrence = Integer.parseInt(sub[0].subSequence(0, 1).toString());
-            maxOccurrence = Integer.parseInt(sub[0].subSequence(2, 3).toString());
+            occurrences = new OccurrenceRange(
+                    Integer.parseInt(sub[0].subSequence(0, 1).toString()),
+                    Integer.parseInt(sub[0].subSequence(2, 3).toString())
+            );
         }
 
         private Matcher getMatcher(String passwordLine) {
-            Matcher matcher = pattern.matcher(passwordLine);
+            Matcher matcher = PATTERN.matcher(passwordLine);
             if (!matcher.matches()) {
                 System.out.printf("Line [%s] does not match to matcher", passwordLine);
                 throw new IllegalArgumentException("Wrong input format for line: " + passwordLine);

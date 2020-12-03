@@ -3,6 +3,7 @@ package dev.insidemind.advent.day2;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class AppTest {
@@ -14,9 +15,26 @@ class AppTest {
 
         //then
         assertArrayEquals("abcde".toCharArray(), passwordLine.password);
-        assertEquals(1, passwordLine.minOccurrence);
-        assertEquals(3, passwordLine.maxOccurrence);
+        assertEquals(1, passwordLine.occurrences.min());
+        assertEquals(3, passwordLine.occurrences.max());
         assertEquals('a', passwordLine.requiredLetter);
     }
 
+    @Test
+    void shouldFindInvalidPassword() {
+        String input = "1-3 b: cdefg";
+        App.PasswordLine passwordLine = new App.PasswordLine(input);
+
+        //then
+        Assertions.assertFalse(passwordLine.validate());
+    }
+
+    @Test
+    void shouldFindValidPassword() {
+        String input = "1-3 a: abcde";
+        App.PasswordLine passwordLine = new App.PasswordLine(input);
+
+        //then
+        Assertions.assertTrue(passwordLine.validate());
+    }
 }
