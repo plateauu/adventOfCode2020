@@ -1,7 +1,7 @@
 package dev.insidemind.advent.day2;
 
-import static dev.insidemind.advent.day2.App.PasswordLine.*;
-import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.*;
+import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.POSITIONS;
+import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.REPETITIONS;
 
 import dev.insidemind.advent.LinesReader;
 import java.nio.file.Path;
@@ -47,21 +47,25 @@ class App {
     }
 
     public static void main(String[] args) {
+        validate(REPETITIONS);
+        validate(POSITIONS);
+    }
+
+    public static void validate(PasswordLine.ValidateType type) {
         long start = System.currentTimeMillis();
         var hits = lines.stream()
-                        .filter(line -> line.validate(REPETITIONS))
+                        .filter(line -> line.validate(type))
                         .count();
         long stop = System.currentTimeMillis();
         var time = stop - start;
-        System.out.printf("Time spend: %dms%n", time);
-        System.out.printf("Invalid passwords hits: %d%n", hits);
+        System.out.printf("Time spend for %s: %dms%n", type, time);
+        System.out.printf("Invalid passwords for %s hits: %d%n", type, hits);
     }
-
     static class PasswordLine {
         private static final String REGEX = "((\\d{1,2}-\\d{1,2} [a-z]): ([a-zA-Z]+))";
         private static final Pattern PATTERN = Pattern.compile(REGEX);
 
-        OccurrenceValidator occurrences;
+        Range range;
         char requiredLetter;
         char[] password;
 
@@ -72,11 +76,24 @@ class App {
         }
 
         boolean validate(ValidateType type) {
-            return validateRepetitions();
+            return switch (type) {
+                case POSITIONS -> validatePosition();
+                case REPETITIONS -> validateRepetitions();
+            };
         }
 
-        enum ValidateType{
-            REPETITIONS, POSITION
+        private boolean validatePosition() {
+            if (password[range.min - 1] == requiredLetter &&
+                    password[range.max - 1] != requiredLetter
+            ) {
+                return true;
+            }
+            return password[range.min - 1] != requiredLetter &&
+                    password[range.max - 1] == requiredLetter;
+        }
+
+        enum ValidateType {
+            REPETITIONS, POSITIONS
         }
 
         private boolean validateRepetitions() {
@@ -86,19 +103,10 @@ class App {
                     hits++;
                 }
             }
-            return occurrences.validate(hits);
+            return hits >= range.min && hits <= range.max();
         }
 
-        record OccurrenceValidator(int min, int max) {
-            boolean validate(int counts) {
-                return counts >= min && counts <= max;
-            }
-        }
-
-        record PositionValidator(int min, int max) {
-            boolean validate(int counts) {
-                return counts >= min && counts <= max;
-            }
+        record Range(int min, int max) {
         }
 
         private void extractPassword(Matcher matcher) {
@@ -110,7 +118,7 @@ class App {
             String[] sub = requirements.split("\s");
             requiredLetter = sub[1].toCharArray()[0];
             var o = sub[0].split("-");
-            occurrences = new OccurrenceValidator(
+            range = new Range(
                     Integer.parseInt(o[0]), Integer.parseInt(o[1])
             );
         }

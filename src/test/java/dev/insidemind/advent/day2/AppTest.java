@@ -1,6 +1,6 @@
 package dev.insidemind.advent.day2;
 
-import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.POSITION;
+import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.POSITIONS;
 import static dev.insidemind.advent.day2.App.PasswordLine.ValidateType.REPETITIONS;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,8 +17,8 @@ class AppTest {
 
         //then
         assertArrayEquals("abcde".toCharArray(), passwordLine.password);
-        assertEquals(1, passwordLine.occurrences.min());
-        assertEquals(3, passwordLine.occurrences.max());
+        assertEquals(1, passwordLine.range.min());
+        assertEquals(3, passwordLine.range.max());
         assertEquals('a', passwordLine.requiredLetter);
     }
 
@@ -29,8 +29,8 @@ class AppTest {
 
         //then
         assertArrayEquals("abcde".toCharArray(), passwordLine.password);
-        assertEquals(11, passwordLine.occurrences.min());
-        assertEquals(33, passwordLine.occurrences.max());
+        assertEquals(11, passwordLine.range.min());
+        assertEquals(33, passwordLine.range.max());
         assertEquals('a', passwordLine.requiredLetter);
     }
 
@@ -58,15 +58,33 @@ class AppTest {
         App.PasswordLine passwordLine = new App.PasswordLine(input);
 
         //then
-        Assertions.assertFalse(passwordLine.validate(POSITION));
+        Assertions.assertFalse(passwordLine.validate(POSITIONS));
     }
 
     @Test
-    void shouldFindValidPasswordRegardingToItsPosition() {
-        String input = "1-3 a: abcde";
+    void shouldFindInvalidPasswordRegardingToItsExistenceAtBothPositions() {
+        String input = "1-3 b: bbbde";
         App.PasswordLine passwordLine = new App.PasswordLine(input);
 
         //then
-        Assertions.assertTrue(passwordLine.validate(REPETITIONS));
+        Assertions.assertFalse(passwordLine.validate(POSITIONS));
+    }
+
+    @Test
+    void shouldFindValidPasswordRegardingToItsFirstPosition() {
+        String input = "1-3 b: bbcde";
+        App.PasswordLine passwordLine = new App.PasswordLine(input);
+
+        //then
+        Assertions.assertTrue(passwordLine.validate(POSITIONS));
+    }
+
+    @Test
+    void shouldFindValidPasswordRegardingToItsSecondPosition() {
+        String input = "1-3 b: abbde";
+        App.PasswordLine passwordLine = new App.PasswordLine(input);
+
+        //then
+        Assertions.assertTrue(passwordLine.validate(POSITIONS));
     }
 }
