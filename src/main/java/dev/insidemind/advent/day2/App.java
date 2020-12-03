@@ -55,7 +55,7 @@ class App {
     }
 
     static class PasswordLine {
-        private static final String REGEX = "((\\d-\\d [a-z]): ([a-zA-Z]+))";
+        private static final String REGEX = "((\\d{1,2}-\\d{1,2} [a-z]): ([a-zA-Z]+))";
         private static final Pattern PATTERN = Pattern.compile(REGEX);
 
         OccurrenceRange occurrences;
@@ -92,16 +92,16 @@ class App {
             var requirements = matcher.group(2);
             String[] sub = requirements.split("\s");
             requiredLetter = sub[1].toCharArray()[0];
+            var o = sub[0].split("-");
             occurrences = new OccurrenceRange(
-                    Integer.parseInt(sub[0].subSequence(0, 1).toString()),
-                    Integer.parseInt(sub[0].subSequence(2, 3).toString())
+                    Integer.parseInt(o[0]), Integer.parseInt(o[1])
             );
         }
 
         private Matcher getMatcher(String passwordLine) {
             Matcher matcher = PATTERN.matcher(passwordLine);
             if (!matcher.matches()) {
-                System.out.printf("Line [%s] does not match to matcher", passwordLine);
+                System.out.printf("Line [%s] does not match to matcher%n", passwordLine);
                 throw new IllegalArgumentException("Wrong input format for line: " + passwordLine);
             }
             return matcher;

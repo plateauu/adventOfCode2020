@@ -21,6 +21,18 @@ class AppTest {
     }
 
     @Test
+    void shouldParsePasswordLineWhenMoreThanOneDigitsExists() {
+        String input = "11-33 a: abcde";
+        App.PasswordLine passwordLine = new App.PasswordLine(input);
+
+        //then
+        assertArrayEquals("abcde".toCharArray(), passwordLine.password);
+        assertEquals(11, passwordLine.occurrences.min());
+        assertEquals(33, passwordLine.occurrences.max());
+        assertEquals('a', passwordLine.requiredLetter);
+    }
+
+    @Test
     void shouldFindInvalidPassword() {
         String input = "1-3 b: cdefg";
         App.PasswordLine passwordLine = new App.PasswordLine(input);
