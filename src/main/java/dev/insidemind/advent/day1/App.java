@@ -26,10 +26,13 @@ import java.util.List;
 class App {
     static final int YEAR = 2020;
     static List<Integer> lines;
-    static final Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day1/inputs.txt");
+
+    static {
+        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day1/inputs.txt");
+        lines = LinesReader.readAllLines(INPUT, Integer::parseInt);
+    }
 
     public static void main(String[] args) {
-        lines = LinesReader.readAllLines(INPUT, Integer::parseInt);
         int size = lines.size();
         for (int i : lines) {
             for (int secondIdx = lines.indexOf(i); secondIdx < size - 1; secondIdx++) {

@@ -1,5 +1,10 @@
 package dev.insidemind.advent.day2;
 
+import dev.insidemind.advent.LinesReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
 /**
  * Your flight departs in a few days from the coastal airport; the easiest way down to the coast from here is via
  * toboggan.
@@ -29,4 +34,13 @@ package dev.insidemind.advent.day2;
  * How many passwords are valid according to their policies?
  */
 class App {
+    static List<Integer> lines;
+
+    static {
+        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day2/inputs.txt");
+        lines = LinesReader.readAllLines(INPUT, Integer::parseInt);
+    }
+
+
+
 }
