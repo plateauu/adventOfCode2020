@@ -35,7 +35,7 @@ class AppTest {
 
         assertTrue(result.keySet().containsAll(List.of(1, 2, 3, 4, 5)));
         assertFalse(result.values().stream().anyMatch(Objects::isNull));
-        assertEquals(10, result.size());
+        assertEquals(11, result.size());
 
         var fields = result.get(1);
         assertNotNull(fields);
