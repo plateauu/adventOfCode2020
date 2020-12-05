@@ -30,13 +30,14 @@ class App {
 
     static class TreeCounter {
         private static final int HORIZONTAL_MOVE = 3;
-        private static final int vertical = 1;
-        public static final int CALIBRATOR = 1;
+        private static final int CALIBRATOR = 1;
+
         private final Map<Integer, List<TrajectoryParser.Field>> fields;
-        int lineSize;
+        private final int lineSize;
+
         private int treeCount = 0;
-        int fieldLaneNumber = 0;
-        int lineIndex = 1;
+        private int fieldLaneNumber = 0;
+        private int lineIndex = 1;
 
         TreeCounter(Map<Integer, List<TrajectoryParser.Field>> fields) {
             this.fields = fields;
@@ -63,7 +64,7 @@ class App {
                     treeCount++;
                 }
             } else {
-                lineIndex = idx - lineSize - CALIBRATOR;
+                lineIndex = idx - lineSize;
             }
             walk(nextLine());
         }
