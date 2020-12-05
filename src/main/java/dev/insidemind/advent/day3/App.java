@@ -36,12 +36,12 @@ class App {
         private final int lineSize;
 
         private int treeCount = 0;
-        private int fieldLaneNumber = 0;
+        private int fieldLaneNumber = 1;
         private int lineIndex = 1;
 
         TreeCounter(Map<Integer, List<TrajectoryParser.Field>> fields) {
             this.fields = fields;
-            this.lineSize = this.fields.get(1).size();
+            this.lineSize = this.fields.get(fieldLaneNumber).size();
         }
 
         int getTreeCount() {
@@ -57,15 +57,16 @@ class App {
             if (line.isEmpty()) {
                 return;
             }
+
             var idx = lineIndex + HORIZONTAL_MOVE;
-            if (idx <= lineSize) {
-                lineIndex = idx;
-                if (line.get(lineIndex - CALIBRATOR).type == TrajectoryParser.FieldType.TREE) {
-                    treeCount++;
-                }
-            } else {
-                lineIndex = idx - lineSize;
+            lineIndex = idx <= lineSize
+                    ? idx
+                    : idx - lineSize;
+
+            if (line.get(lineIndex - CALIBRATOR).type == TrajectoryParser.FieldType.TREE) {
+                treeCount++;
             }
+
             walk(nextLine());
         }
 

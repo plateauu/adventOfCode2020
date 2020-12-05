@@ -62,6 +62,6 @@ class AppTest {
         Map<Integer, List<Field>> fields = trajectoryParser.parse();
         var walker = new App.TreeCounter(fields);
         walker.count();
-        assertEquals(2,walker.getTreeCount());
+        assertEquals(7,walker.getTreeCount());
    }
 }
