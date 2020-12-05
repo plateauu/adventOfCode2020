@@ -51,11 +51,11 @@ class AppTest {
     }
 
    @Test
-    void shouldMarkTree() {
+    void shouldCountTree() {
         var trajectoryParser = new App.TrajectoryParser(input);
         Map<Integer, List<Field>> fields = trajectoryParser.parse();
-        var walker = new App.TreeWalker(fields);
-        walker.walk();
+        var walker = new App.TreeCounter(fields);
+        walker.count();
         assertEquals(2,walker.getTreeCount());
    }
 }

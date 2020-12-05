@@ -28,21 +28,52 @@ class App {
 
     }
 
-    static class TreeWalker {
-        private static final int horizontal = 3;
+    static class TreeCounter {
+        private static final int HORIZONTAL_MOVE = 3;
         private static final int vertical = 1;
+        public static final int CALIBRATOR = 1;
         private final Map<Integer, List<TrajectoryParser.Field>> fields;
-        private int treeCount;
+        int lineSize;
+        private int treeCount = 0;
+        int fieldLaneNumber = 0;
+        int lineIndex = 1;
 
-        public TreeWalker(Map<Integer, List<TrajectoryParser.Field>> fields) {
+        TreeCounter(Map<Integer, List<TrajectoryParser.Field>> fields) {
             this.fields = fields;
+            this.lineSize = this.fields.get(1).size();
         }
 
-        public int getTreeCount() {
+        int getTreeCount() {
             return treeCount;
         }
 
-        void walk() {
+        void count() {
+            List<TrajectoryParser.Field> line = nextLine();
+            walk(line);
+        }
+
+        private void walk(List<TrajectoryParser.Field> line) {
+            if (line.isEmpty()) {
+                return;
+            }
+            var idx = lineIndex + HORIZONTAL_MOVE;
+            if (idx <= lineSize) {
+                lineIndex = idx;
+                if (line.get(lineIndex - CALIBRATOR).type == TrajectoryParser.FieldType.TREE) {
+                    treeCount++;
+                }
+            } else {
+                lineIndex = idx - lineSize - CALIBRATOR;
+            }
+            walk(nextLine());
+        }
+
+        private List<TrajectoryParser.Field> nextLine() {
+            fieldLaneNumber++;
+            if (fieldLaneNumber > fields.size()) {
+                return Collections.emptyList();
+            }
+            return this.fields.get(fieldLaneNumber);
         }
 
     }
