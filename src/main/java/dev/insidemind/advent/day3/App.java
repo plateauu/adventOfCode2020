@@ -20,12 +20,20 @@ class App {
     static List<String> lines;
 
     static {
-        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day3/inputs.txt");
+        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day3/input.txt");
         lines = LinesReader.readAllLines(INPUT, Function.identity());
     }
 
     public static void main(String[] args) {
+        long start = System.currentTimeMillis();
 
+        var treeCounter = new TreeCounter(new TrajectoryParser(lines).parse());
+        treeCounter.count();
+        System.out.printf("Tree counted: %d%n", treeCounter.getTreeCount());
+
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
     }
 
     static class TreeCounter {
