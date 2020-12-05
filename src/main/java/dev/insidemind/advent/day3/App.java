@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Day 3 Advent od code 2020
@@ -33,7 +34,7 @@ class App {
             this.lines = lines;
         }
 
-        private Map<Integer, List<Field>> parse() {
+        Map<Integer, List<Field>> parse() {
             var counter = new AtomicInteger(0);
             return lines.stream()
                         .collect(Collectors.toMap(
@@ -51,17 +52,24 @@ class App {
         }
 
         enum FieldType {
-            TREE('.'), OPEN_SQUARE('#');
+            TREE('#'), OPEN_SQUARE('.');
             char symbol;
 
             FieldType(char symbol) {
                 this.symbol = symbol;
             }
+
+            static FieldType of(char symbol) {
+                return Stream.of(FieldType.values())
+                      .filter(s -> s.symbol == symbol)
+                      .findFirst()
+                      .orElseThrow();
+            }
         }
 
         static record Field(int line, int index, FieldType type) {
             Field(int line, int index, char field) {
-                this(line, index, FieldType.valueOf(new String(new char[]{field})));
+                this(line, index, FieldType.of(field));
             }
         }
     }
