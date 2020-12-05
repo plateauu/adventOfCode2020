@@ -4,6 +4,7 @@ import dev.insidemind.advent.LinesReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +25,25 @@ class App {
     }
 
     public static void main(String[] args) {
+
+    }
+
+    static class TreeWalker {
+        private static final int horizontal = 3;
+        private static final int vertical = 1;
+        private final Map<Integer, List<TrajectoryParser.Field>> fields;
+        private int treeCount;
+
+        public TreeWalker(Map<Integer, List<TrajectoryParser.Field>> fields) {
+            this.fields = fields;
+        }
+
+        public int getTreeCount() {
+            return treeCount;
+        }
+
+        void walk() {
+        }
 
     }
 
@@ -61,9 +81,9 @@ class App {
 
             static FieldType of(char symbol) {
                 return Stream.of(FieldType.values())
-                      .filter(s -> s.symbol == symbol)
-                      .findFirst()
-                      .orElseThrow();
+                             .filter(s -> s.symbol == symbol)
+                             .findFirst()
+                             .orElseThrow();
             }
         }
 

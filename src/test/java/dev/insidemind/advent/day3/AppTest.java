@@ -50,4 +50,12 @@ class AppTest {
         assertEquals(OPEN_SQUARE, lastField.type());
     }
 
+   @Test
+    void shouldMarkTree() {
+        var trajectoryParser = new App.TrajectoryParser(input);
+        Map<Integer, List<Field>> fields = trajectoryParser.parse();
+        var walker = new App.TreeWalker(fields);
+        walker.walk();
+        assertEquals(2,walker.getTreeCount());
+   }
 }
