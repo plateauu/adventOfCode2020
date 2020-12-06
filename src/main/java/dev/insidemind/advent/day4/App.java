@@ -16,28 +16,34 @@ import java.util.regex.Pattern;
 class App {
     static List<String> lines;
 
-    private static class CredentialMerger {
+    static class CredentialMerger {
         private final List<String> lines;
+        private final List<String> toOneLine = new ArrayList<>();
+        private final List<String> result = new LinkedList<>();
 
         CredentialMerger(List<String> lines) {
             this.lines = lines;
         }
 
         List<String> merge() {
-            var result = new LinkedList<String>();
             Pattern p = Pattern.compile("^\\s*$");
-            var toOneLine = new ArrayList<String>();
 
             for (var line : lines) {
                 if (!p.matcher(line).matches()) {
                     toOneLine.add(line);
                 } else {
-                    var joined = String.join(" ", toOneLine);
-                    result.add(joined);
-                    toOneLine.clear();
+                    join();
                 }
             }
+
+            join();
             return result;
+        }
+
+        private void join() {
+            var joined = String.join(" ", toOneLine);
+            result.add(joined);
+            toOneLine.clear();
         }
     }
 
