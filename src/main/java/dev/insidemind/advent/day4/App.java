@@ -16,13 +16,53 @@ import java.util.regex.Pattern;
 class App {
     static List<String> lines;
 
+    static class CredentialValidator {
+        private final List<String> credentials;
+
+        private static final Pattern PATTERN = Pattern.compile(
+                "^(?=.*ecl:.*)(?=.*pid:)(?=.*eyr:.*)(?=.*byr:)(?=.*iyr:.*)(?=.*hgt:)(?=.*cid:)?.*$"
+        );
+
+        CredentialValidator(List<String> credentials) {
+            this.credentials = credentials;
+        }
+
+        long validate() {
+            var result = countValid();
+            System.out.printf("Valid passports: %d%n", result);
+            return result;
+        }
+
+        private long countValid() {
+            long count = 0L;
+            var invalid = new LinkedList<String>();
+            var valid = new LinkedList<String>();
+            for (String s : credentials) {
+                if (PATTERN.matcher(s).matches()) {
+                    count++;
+                    valid.add(s);
+                } else {
+                    invalid.add(s);
+                }
+            }
+            System.out.printf("Valid: %n");
+            valid.forEach(System.out::println);
+            return count;
+        }
+    }
+
     static {
         Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day4/input.txt");
         lines = LinesReader.readAllLines(INPUT, Function.identity());
     }
 
     public static void main(String[] args) {
-        new CredentialMerger(lines);
+        long start = System.currentTimeMillis();
+        var merged = new CredentialMerger(lines).merge();
+        new CredentialValidator(merged).validate();
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
     }
 
     static class CredentialMerger {

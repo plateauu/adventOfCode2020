@@ -29,4 +29,11 @@ class AppTest {
         Assertions.assertEquals(4,result.size());
     }
 
+    @Test
+    void shouldFindTwoValidCredentials() {
+        var credentialMerger = new App.CredentialMerger(input);
+        var result = new App.CredentialValidator(credentialMerger.merge()).validate();
+
+        Assertions.assertEquals(2,result);
+    }
 }
