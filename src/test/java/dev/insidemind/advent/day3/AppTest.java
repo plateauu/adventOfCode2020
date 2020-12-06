@@ -14,6 +14,7 @@ import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 class AppTest {
+
     private List<String> input = List.of(
             "..##.......",
             "#...#...#..",
@@ -56,12 +57,12 @@ class AppTest {
         assertEquals(OPEN_SQUARE, lastField.type());
     }
 
-   @Test
+    @Test
     void shouldCountTree() {
         var trajectoryParser = new App.TrajectoryParser(input);
         Map<Integer, List<Field>> fields = trajectoryParser.parse();
         var walker = new App.TreeCounter(fields);
         walker.count();
-        assertEquals(7,walker.getTreeCount());
-   }
+        assertEquals(7, walker.getTreeCount());
+    }
 }
