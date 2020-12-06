@@ -16,6 +16,15 @@ import java.util.regex.Pattern;
 class App {
     static List<String> lines;
 
+    static {
+        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day4/input.txt");
+        lines = LinesReader.readAllLines(INPUT, Function.identity());
+    }
+
+    public static void main(String[] args) {
+        new CredentialMerger(lines);
+    }
+
     static class CredentialMerger {
         private final List<String> lines;
         private final List<String> toOneLine = new ArrayList<>();
@@ -45,14 +54,5 @@ class App {
             result.add(joined);
             toOneLine.clear();
         }
-    }
-
-    static {
-        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day4/input.txt");
-        lines = LinesReader.readAllLines(INPUT, Function.identity());
-    }
-
-    public static void main(String[] args) {
-        new CredentialMerger(lines);
     }
 }
