@@ -16,6 +16,20 @@ import java.util.regex.Pattern;
 class App {
     static List<String> lines;
 
+    static {
+        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day4/input.txt");
+        lines = LinesReader.readAllLines(INPUT, Function.identity());
+    }
+
+    public static void main(String[] args) {
+        long start = System.currentTimeMillis();
+        var merged = new CredentialMerger(lines).merge();
+        new CredentialValidator(merged).validate();
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
+    }
+
     static class CredentialValidator {
         private final List<String> credentials;
 
@@ -43,20 +57,6 @@ class App {
             System.out.printf("Valid: %n");
             return count;
         }
-    }
-
-    static {
-        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day4/input.txt");
-        lines = LinesReader.readAllLines(INPUT, Function.identity());
-    }
-
-    public static void main(String[] args) {
-        long start = System.currentTimeMillis();
-        var merged = new CredentialMerger(lines).merge();
-        new CredentialValidator(merged).validate();
-        long stop = System.currentTimeMillis();
-        var time = stop - start;
-        System.out.printf("Time spend: %dms%n", time);
     }
 
     static class CredentialMerger {
