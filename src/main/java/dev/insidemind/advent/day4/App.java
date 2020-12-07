@@ -48,13 +48,20 @@ class App {
         }
 
         private long countValid() {
-            long count = 0L;
-            for (String s : credentials) {
-                if (PATTERN.matcher(s).matches()) {
-                    count++;
-                }
-            }
-            System.out.printf("Valid: %n");
+            var count = credentials.stream()
+                                   .filter(s -> PATTERN.matcher(s).matches())
+                                   .map(Credential::new)
+                                   .filter(Credential::validateBirthYear)
+                                   .filter(Credential::validateExpirationYear)
+                                   .filter(Credential::validateEachOfField)
+                                   .filter(Credential::validateEyeColor)
+                                   .filter(Credential::validateHairColor)
+                                   .filter(Credential::validateHeight)
+                                   .filter(Credential::validateIssueYear)
+                                   .filter(Credential::validatePassportId)
+                                   .count();
+
+            System.out.printf("Valid: %d%n", count);
             return count;
         }
     }
