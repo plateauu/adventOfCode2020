@@ -35,69 +35,14 @@ class App {
 
         private long countValid() {
             long count = 0L;
-            var invalid = new LinkedList<Credential>();
-            var valid = new LinkedList<Credential>();
             for (String s : credentials) {
                 if (PATTERN.matcher(s).matches()) {
                     count++;
-                    valid.add(new Credential(s));
-                } else {
-                    invalid.add(new Credential(s));
                 }
             }
             System.out.printf("Valid: %n");
-            valid.stream().filter(credential -> !credential.isValid()).forEach(System.out::println);
-            return valid.stream().filter(Credential::isValid).count();
+            return count;
         }
-
-        static class Credential {
-            String hgt;
-            String byr;
-            String pid;
-            String iyr;
-            String hcl;
-            String eyr;
-            String ecl;
-            String cid;
-
-            Credential(String line) {
-                for (var s : line.split("\s")) {
-                    if(s.contains("byr")) this.byr = s.substring(4);
-                    if(s.contains("hgt")) this.hgt = s.substring(4);
-                    if(s.contains("pid")) this.pid = s.substring(4);
-                    if(s.contains("iyr")) this.iyr = s.substring(4);
-                    if(s.contains("hcl")) this.hcl = s.substring(4);
-                    if(s.contains("eyr")) this.eyr = s.substring(4);
-                    if(s.contains("ecl")) this.ecl = s.substring(4);
-                    if(s.contains("cid")) this.cid = s.substring(4);
-                }
-            }
-
-            boolean isValid() {
-                return hgt != null
-                        && byr != null
-                        && pid != null
-                        && iyr != null
-                        && hcl != null
-                        && eyr != null
-                        && ecl != null;
-            }
-
-            @Override
-            public String toString() {
-                return "Credential{" +
-                        "hgt='" + hgt + '\'' +
-                        ", byr='" + byr + '\'' +
-                        ", pid='" + pid + '\'' +
-                        ", iyr='" + iyr + '\'' +
-                        ", hcl='" + hcl + '\'' +
-                        ", eyr='" + eyr + '\'' +
-                        ", ecl='" + ecl + '\'' +
-                        ", cid='" + cid + '\'' +
-                        '}';
-            }
-        }
-
     }
 
     static {
