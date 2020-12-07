@@ -20,7 +20,7 @@ class App {
         private final List<String> credentials;
 
         private static final Pattern PATTERN = Pattern.compile(
-                "^(?=.*ecl:.*)(?=.*pid:)(?=.*eyr:.*)(?=.*byr:)(?=.*iyr:.*)(?=.*hgt:)(?=.*cid:)?.*$"
+                "^(?=.*hcl.*)(?=.*ecl:.*)(?=.*pid:)(?=.*eyr:.*)(?=.*byr:)(?=.*iyr:.*)(?=.*hgt:)(?=.*cid:)?.*$"
         );
 
         CredentialValidator(List<String> credentials) {
@@ -46,11 +46,11 @@ class App {
                 }
             }
             System.out.printf("Valid: %n");
-            valid.stream().filter(Credential::isValid).forEach(System.out::println);
+            valid.stream().filter(credential -> !credential.isValid()).forEach(System.out::println);
             return valid.stream().filter(Credential::isValid).count();
         }
 
-        class Credential {
+        static class Credential {
             String hgt;
             String byr;
             String pid;
@@ -81,7 +81,20 @@ class App {
                         && hcl != null
                         && eyr != null
                         && ecl != null;
+            }
 
+            @Override
+            public String toString() {
+                return "Credential{" +
+                        "hgt='" + hgt + '\'' +
+                        ", byr='" + byr + '\'' +
+                        ", pid='" + pid + '\'' +
+                        ", iyr='" + iyr + '\'' +
+                        ", hcl='" + hcl + '\'' +
+                        ", eyr='" + eyr + '\'' +
+                        ", ecl='" + ecl + '\'' +
+                        ", cid='" + cid + '\'' +
+                        '}';
             }
         }
 
