@@ -101,10 +101,6 @@ class App {
             }
         }
 
-        boolean isValid() {
-            return validateEachOfField();
-        }
-
         private boolean validateEachOfField() {
             return hgt != null
                     && byr != null
@@ -146,7 +142,7 @@ class App {
 
         private boolean validateEyeColor() {
             Pattern p = Pattern.compile("^(amb|blu|brn|gry|grn|hzl|oth)$");
-            return p.matcher(hcl).matches();
+            return p.matcher(ecl).matches();
         }
 
         private boolean validatePassportId() {
@@ -156,7 +152,11 @@ class App {
 
         private boolean validateHeight() {
             Pattern p = Pattern.compile("^(\\d{2,3})(cm|in)$");
-            var matchResult = p.matcher(hgt).toMatchResult();
+            var matchResult = p.matcher(hgt);
+            if (!matchResult.matches()) {
+                return false;
+            }
+
             var number = parse(matchResult.group(1));
 
             if (number == null) {
