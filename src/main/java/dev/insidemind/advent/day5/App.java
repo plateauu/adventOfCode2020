@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Day 5 Advent od code 2020
@@ -23,13 +24,27 @@ class App {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
 
-        var max = lines.stream()
-                       .map(SeatFinder::new)
-                       .map(SeatFinder::find)
-                       .map(Pair::calculateSeatId)
-                       .max(Integer::compareTo);
+        List<Integer> pairs = lines.stream()
+                                   .map(SeatFinder::new)
+                                   .map(SeatFinder::find)
+                                   .map(Pair::calculateSeatId)
+                                   .collect(Collectors.toUnmodifiableList());
+
+        var max = pairs.stream().max(Integer::compareTo);
 
         System.out.printf("Highest boarding pass is: %d%n", max.orElseThrow());
+
+        var sorted = pairs.stream().sorted().collect(Collectors.toUnmodifiableList());
+        for (int i = 0; i < sorted.size() - 1; i++) {
+            var second = sorted.get(i + 1);
+            var first = sorted.get(i);
+            if (second - first == 2) {
+                System.out.printf("Found missed seatId between %d and %d. Missed seat is: %d%n",
+                        first, second, (first + second) / 2
+                );
+            }
+        }
+
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);

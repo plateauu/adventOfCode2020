@@ -1,45 +1,10 @@
 package dev.insidemind.advent.day5;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class AppTest {
-
-    @Test
-    void testName() {
-        var i = 127 >>> 1;
-        System.out.printf("Right shifted >>> : %d%n", i);
-//        System.out.printf("Right shifted >>> : %d%n", 127 - i);
-        System.out.printf("Right shifted >>> : %d%n", 127 >>> 1 >>> 1);
-        System.out.printf("Right shifted >>> : %d%n", 127 >>> 1 >>> 1 >>> 1);
-        System.out.printf("Right shifted >>> : %d%n", 127 >>> 1 >>> 1 >>> 1 >>> 1);
-        System.out.printf("Right shifted >>> : %d%n", 127 >>> 1 >>> 1 >>> 1 >>> 1 >>> 1);
-        System.out.printf("Right shifted >>> : %d%n", 127 >>> 1 >>> 1 >>> 1 >>> 1 >>> 1 >>> 1);
-    }
-
-    @Test
-    void testName2() {
-        var v = 127;
-        var d = divide(v);
-        System.out.printf("result1: %d%n", v - d);
-        v = v - d;
-        d = divide(d);
-        System.out.printf("result2: %d%n", v - d);
-        d = divide(v);
-        System.out.printf("result3: %d%n", v - d);
-        d = divide(v);
-        System.out.printf("result4: %d%n", v - d);
-        d = divide(v);
-        System.out.printf("result5: %d%n", v - d);
-        d = divide(v);
-        System.out.printf("result6: %d%n", v - d);
-    }
-
-    private int divide(int d) {
-        return d - (d >>> 1);
-    }
 
     @ParameterizedTest
     @CsvSource({
