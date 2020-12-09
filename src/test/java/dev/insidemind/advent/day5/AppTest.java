@@ -43,12 +43,12 @@ class AppTest {
 
     @ParameterizedTest
     @CsvSource({
-            "FBFBBFFRLR,44",
-            "BFFFBBFRRR,70",
-            "FFFBBBFRRR,14",
-            "BBFFBBFRLL,102",
+            "FBFBBFFRLR,44,5",
+//            "BFFFBBFRRR,70,7",
+//            "FFFBBBFRRR,14,7",
+//            "BBFFBBFRLL,102,4",
     })
-    void shouldProperlyResultToEmptySeat(String input, Integer expected) {
+    void shouldProperlyResultToEmptySeat(String input, Integer row, Integer column) {
         /**
          * FBFBBFFRLR: row 44, column 5
          * BFFFBBFRRR: row 70, column 7, seat ID 567.",
@@ -56,6 +56,6 @@ class AppTest {
          * BBFFBBFRLL: row 102, column 4, seat ID 820."
          */
         var seatFinder = new App.SeatFinder(input);
-        Assertions.assertEquals(expected, seatFinder.find());
+        Assertions.assertEquals(new App.Pair(row, column), seatFinder.find());
     }
 }

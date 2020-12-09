@@ -38,7 +38,7 @@ class App {
         final String row;
         final char _F = 'F';
         final char _B = 'B';
-        final char _A = 'A';
+        final char _L = 'L';
         final char _R = 'R';
 
         private final char[] chars;
@@ -48,25 +48,41 @@ class App {
             this.chars = row.toCharArray();
         }
 
-        public int find() {
-            var start = 0;
-            var end = from;
-            int pivot = 128;
-
+        public Pair find() {
+            var startRow = 0;
+            var endRow = from;
+            var startCol = 0;
+            var endCol = 7;
+            int row = 128;
+            int column = 8;
             for (int i = 0; i < chars.length; i++) {
-                pivot = divide(pivot);
-                if (chars[i] == _F) {
-                    end = end - pivot;
+                if (List.of(_F, _B).contains(chars[i])) {
+                    row = divide(row);
+                    if (chars[i] == _F) {
+                        endRow = endRow - row;
+                    } else {
+                        startRow = startRow + row;
+                    }
                 } else {
-                    start = start + pivot;
+                    column = divide(column);
+                    if (chars[i] == _L) {
+                        endCol = endCol - column;
+                    } else {
+                        startCol = startCol + column;
+                    }
                 }
             }
-            return chars[6]==_F ? start : end;
+            row = chars[6] == _F ? startRow : endRow;
+            column = chars[9] == _R ? startCol : endCol;
+            return new Pair(row, column);
         }
 
         private int divide(int from) {
             return from >>> 1;
         }
+    }
+
+    static record Pair(int row, int column) {
     }
 
 }
