@@ -83,6 +83,9 @@ class App {
     }
 
     static record Pair(int row, int column) {
+        public Integer assess() {
+            return row * 8 + column;
+        }
     }
 
 }
