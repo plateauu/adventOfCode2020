@@ -57,6 +57,6 @@ class AppTest {
          */
         var seatFinder = new App.SeatFinder(input);
         Assertions.assertEquals(new App.Pair(row, column), seatFinder.find());
-        Assertions.assertEquals(seat, seatFinder.find().assess());
+        Assertions.assertEquals(seat, seatFinder.find().calculateSeatId());
     }
 }

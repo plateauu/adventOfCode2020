@@ -21,7 +21,18 @@ class App {
     private static final int from = 127;
 
     public static void main(String[] args) {
-        new SeatFinder("row");
+        long start = System.currentTimeMillis();
+
+        var max = lines.stream()
+                       .map(SeatFinder::new)
+                       .map(SeatFinder::find)
+                       .map(Pair::calculateSeatId)
+                       .max(Integer::compareTo);
+
+        System.out.printf("Highest boarding pass is: %d%n", max.orElseThrow());
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
     }
 
     /**
@@ -83,7 +94,7 @@ class App {
     }
 
     static record Pair(int row, int column) {
-        public Integer assess() {
+        public Integer calculateSeatId() {
             return row * 8 + column;
         }
     }
