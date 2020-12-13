@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -32,21 +33,20 @@ class App {
     }
 
     private static void partOne(List<CustomGroup> groups) {
+        execute(() -> sumYesGroups(groups), "Sum of all yes group is: %d%n");
+    }
+
+    private static void execute(Supplier<Integer> i, String s) {
         long start = System.currentTimeMillis();
-        var result = sumYesGroups(groups);
-        System.out.printf("Sum of all yes group is: %d%n", result);
+        var result = i.get();
+        System.out.printf(s, result);
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);
     }
 
     private static void partTwo(List<CustomGroup> groups) {
-        long start = System.currentTimeMillis();
-        var result = sumEveryoneAnsweredYesGroups(groups);
-        System.out.printf("Sum of all answer everyone say yes is: %d%n", result);
-        long stop = System.currentTimeMillis();
-        var time = stop - start;
-        System.out.printf("Time spend: %dms%n", time);
+        execute(() -> sumEveryoneAnsweredYesGroups(groups), "Sum of all answer everyone say yes is: %d%n");
     }
     record GroupToYesAnswers(CustomGroup g, Set<Character> yesAnswers) {
         public int count() {
@@ -54,10 +54,10 @@ class App {
         }
     }
 
-    private static long sumEveryoneAnsweredYesGroups(List<CustomGroup> groups) {
+    private static int sumEveryoneAnsweredYesGroups(List<CustomGroup> groups) {
         return groups.stream()
                      .map(CustomGroup::countEveryoneAnswered)
-                     .mapToLong(value -> value)
+                     .mapToInt(value -> value)
                      .sum();
     }
 
@@ -123,7 +123,7 @@ class App {
             return persons.stream().map(Person::answers).collect(Collectors.joining());
         }
 
-        long countEveryoneAnswered() {
+        int countEveryoneAnswered() {
             Map<Person, String> p = persons.stream()
                                            .collect(Collectors.toMap(Function.identity(), person -> person.answers));
 
@@ -139,7 +139,7 @@ class App {
                 }
             });
 
-            return result.values()
+            return (int) result.values()
                          .stream()
                          .filter(l -> l.size() == persons.size())
                          .count();
