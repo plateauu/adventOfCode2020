@@ -41,12 +41,12 @@ class App {
     private static int sumYesGroups(List<CustomGroup> groups) {
         return groups.stream()
                      .map(group -> {
-                         Set<Character> c = new HashSet<>();
+                         Set<Character> result = new HashSet<>();
                          var chars = group.oneLine().toCharArray();
-                         for (char aChar : chars) {
-                             c.add(aChar);
+                         for (char c : chars) {
+                             result.add(c);
                          }
-                         return new GroupToYesAnswers(group, c);
+                         return new GroupToYesAnswers(group, result);
                      })
                      .map(GroupToYesAnswers::count)
                      .mapToInt(value -> value)
@@ -78,7 +78,7 @@ class App {
         }
 
         private void join() {
-            var joined = String.join(" ", toOneLine);
+            var joined = String.join("", toOneLine);
             result.add(new CustomGroup(joined));
             toOneLine.clear();
         }
