@@ -23,6 +23,10 @@ class App {
     }
 
     public static void main(String[] args) {
+        partOne();
+    }
+
+    private static void partOne() {
         var groups = new CustomGroupMerger(lines).merge();
         long start = System.currentTimeMillis();
         var result = sumYesGroups(groups);
