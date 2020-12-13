@@ -36,18 +36,19 @@ class App {
         execute(() -> sumYesGroups(groups), "Sum of all yes group is: %d%n");
     }
 
-    private static void execute(Supplier<Integer> i, String s) {
+    private static void partTwo(List<CustomGroup> groups) {
+        execute(() -> sumEveryoneAnsweredYesGroups(groups), "Sum of all answer everyone say yes is: %d%n");
+    }
+
+    private static void execute(Supplier<Integer> processTask, String message) {
         long start = System.currentTimeMillis();
-        var result = i.get();
-        System.out.printf(s, result);
+        var result = processTask.get();
+        System.out.printf(message, result);
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);
     }
 
-    private static void partTwo(List<CustomGroup> groups) {
-        execute(() -> sumEveryoneAnsweredYesGroups(groups), "Sum of all answer everyone say yes is: %d%n");
-    }
     record GroupToYesAnswers(CustomGroup g, Set<Character> yesAnswers) {
         public int count() {
             return yesAnswers().size();
@@ -127,6 +128,15 @@ class App {
             Map<Person, String> p = persons.stream()
                                            .collect(Collectors.toMap(Function.identity(), person -> person.answers));
 
+            Map<Character, List<Person>> result = groupByChars(p);
+
+            return (int) result.values()
+                         .stream()
+                         .filter(l -> l.size() == persons.size())
+                         .count();
+        }
+
+        private Map<Character, List<Person>> groupByChars(Map<Person, String> p) {
             var result = new HashMap<Character, List<Person>>();
             p.forEach((person, answers) -> {
                 for (var answer : answers.toCharArray()) {
@@ -138,11 +148,7 @@ class App {
                     });
                 }
             });
-
-            return (int) result.values()
-                         .stream()
-                         .filter(l -> l.size() == persons.size())
-                         .count();
+            return result;
         }
 
     }
