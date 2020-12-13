@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Day 6 Advent od code 2020
@@ -46,7 +47,7 @@ class App {
         return groups.stream()
                      .map(group -> {
                          Set<Character> result = new HashSet<>();
-                         var chars = group.oneLine().toCharArray();
+                         var chars = group.joinAnswers().toCharArray();
                          for (char c : chars) {
                              result.add(c);
                          }
@@ -59,7 +60,7 @@ class App {
 
     static class CustomGroupMerger {
         private final List<String> lines;
-        private final List<String> toOneLine = new ArrayList<>();
+        private final List<Person> persons = new ArrayList<>();
         private final List<CustomGroup> result = new ArrayList<>();
 
         public CustomGroupMerger(List<String> lines) {
@@ -71,23 +72,29 @@ class App {
 
             for (var line : lines) {
                 if (!p.matcher(line).matches()) {
-                    toOneLine.add(line);
+                    persons.add(new Person(line));
                 } else {
-                    join();
+                    createGroup();
                 }
             }
 
-            join();
+            createGroup();
             return result;
         }
 
-        private void join() {
-            var joined = String.join("", toOneLine);
-            result.add(new CustomGroup(joined));
-            toOneLine.clear();
+        private void createGroup() {
+            result.add(new CustomGroup(persons.stream().collect(Collectors.toUnmodifiableList())));
+            persons.clear();
         }
     }
 
-    record CustomGroup(String oneLine) {
+    record Person(String answers){}
+
+
+    record CustomGroup(List<Person> persons) {
+        String joinAnswers() {
+            return persons.stream().map(Person::answers).collect(Collectors.joining());
+        }
+
     }
 }

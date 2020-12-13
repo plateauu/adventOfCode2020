@@ -32,6 +32,6 @@ class AppTest {
 
         //then
         Assertions.assertEquals(5, result.size());
-        result.forEach(customGroup -> Assertions.assertFalse(result.get(0).oneLine().contains(" ")));
+        result.forEach(customGroup -> Assertions.assertFalse(customGroup.joinAnswers().contains(" ")));
     }
 }
