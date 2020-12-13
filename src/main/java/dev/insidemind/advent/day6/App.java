@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Day 6 Advent od code 2020
@@ -107,7 +106,17 @@ class App {
         }
     }
 
-    record Person(String answers){}
+    static class Person {
+        final String answers;
+
+        Person(String answers) {
+            this.answers = answers;
+        }
+
+        String answers() {
+            return answers;
+        }
+    }
 
     record CustomGroup(List<Person> persons) {
         String joinAnswers() {
