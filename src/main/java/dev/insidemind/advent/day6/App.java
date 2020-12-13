@@ -36,18 +36,19 @@ class App {
         execute(() -> sumYesGroups(groups), "Sum of all yes group is: %d%n");
     }
 
-    private static void execute(Supplier<Integer> i, String s) {
+    private static void partTwo(List<CustomGroup> groups) {
+        execute(() -> sumEveryoneAnsweredYesGroups(groups), "Sum of all answer everyone say yes is: %d%n");
+    }
+
+    private static void execute(Supplier<Integer> processTask, String message) {
         long start = System.currentTimeMillis();
-        var result = i.get();
-        System.out.printf(s, result);
+        var result = processTask.get();
+        System.out.printf(message, result);
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);
     }
 
-    private static void partTwo(List<CustomGroup> groups) {
-        execute(() -> sumEveryoneAnsweredYesGroups(groups), "Sum of all answer everyone say yes is: %d%n");
-    }
     record GroupToYesAnswers(CustomGroup g, Set<Character> yesAnswers) {
         public int count() {
             return yesAnswers().size();
