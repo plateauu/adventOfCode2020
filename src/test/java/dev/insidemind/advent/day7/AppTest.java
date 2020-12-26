@@ -46,7 +46,7 @@ class AppTest {
         assertNotNull(parsed[1]);
 
         assertEquals("faded blue", parsed[0]);
-        assertEquals("no other bags", parsed[1]);
+        assertEquals("no other bags.", parsed[1]);
     }
 
 }
