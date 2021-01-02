@@ -45,7 +45,7 @@ class AppTest {
 
         assertNotNull(parsed);
 
-        assertEquals("dark aqua", parsed.external());
+        assertEquals("dark aqua", parsed.name());
         assertEquals(new App.BagParser.InternalElement(1, "dull coral"), parsed.elements()[0]);
         assertEquals(new App.BagParser.InternalElement(4, "shiny coral"), parsed.elements()[1]);
         assertEquals(new App.BagParser.InternalElement(3, "vibrant crimson"), parsed.elements()[2]);

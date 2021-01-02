@@ -48,7 +48,7 @@ class App {
                     r[i] = el;
                     if (!r[i].contains(",") && r[i].matches("^\\d.*$")) {
                         var split = r[i].split(" ", 2);
-                        internals[i] = new InternalElement(Integer.valueOf(split[0]), split[1]);
+                        internals[i] = new InternalElement(Integer.parseInt(split[0]), split[1]);
                     }
                 }
             }
@@ -58,10 +58,11 @@ class App {
             return new Rule(external, result);
         }
 
-        record InternalElement(int count, String name) {
+        record InternalElement(int count, String ruleName) {
+
         }
 
-        public record Rule(String external, InternalElement[] elements) {
+        public record Rule(String name, InternalElement[] elements) {
         }
 
     }
