@@ -20,7 +20,7 @@ class App {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         var shinyBags = partOne();
-        System.out.printf("shiny bags: %d", shinyBags);
+        System.out.printf("shiny bags: %d%n", shinyBags);
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);
