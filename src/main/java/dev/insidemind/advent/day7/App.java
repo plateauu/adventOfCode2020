@@ -136,7 +136,11 @@ class App {
             }
 
             long countBags() {
-                var sum = count() * Arrays.stream(map.get(ruleName()).elements)
+                var bagRule = map.get(ruleName());
+                if (bagRule.end()) {
+                    return count();
+                }
+                var sum = count() + count() * Arrays.stream(bagRule.elements)
                         .mapToLong(InternalElement::countBags)
                         .sum();
                 System.out.printf("Inside %s rule. Sum: %d%n", ruleName, sum);
@@ -146,9 +150,6 @@ class App {
 
         record BagRule(String name, InternalElement[] elements, boolean end) {
             Boolean find(String bagName) {
-//                if (bagName.equals(name())) {
-//                    return true;
-//                }
                 for (InternalElement i : elements()) {
                     if (i.find(bagName)) {
                         return true;
