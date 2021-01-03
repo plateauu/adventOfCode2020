@@ -4,10 +4,7 @@ import dev.insidemind.advent.LinesReader;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,6 +48,7 @@ class App {
                         " (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]|no other bags.)$");
 
         private final List<String> lines;
+        public static final Set<String> TO_SKIP_INDICATORS = Set.of(",", ".");
 
         BagRuleParser(List<String> lines) {
             this.lines = lines;
@@ -80,7 +78,7 @@ class App {
                         continue;
                     }
 
-                    if (el.matches("^\\d.*$")) {
+                    if (shouldParseGroup(el) && el.matches("^\\d.*$")) {
                         var split = el.split(" ", 2);
                         internals[i] = new InternalElement(Integer.parseInt(split[0]), split[1]);
                     } else if (el.contains("no other bags")) {
@@ -96,6 +94,13 @@ class App {
             return new BagRule(ruleName, boxedInternalElements, end);
         }
 
+        private boolean shouldParseGroup(String el) {
+            return TO_SKIP_INDICATORS.stream()
+                    .map(i -> !el.contains(i))
+                    .reduce((a, b) -> a && b)
+                    .orElse(false);
+        }
+
         record InternalElement(int count, String ruleName) implements Function<String, Boolean> {
             @Override
             public Boolean apply(String name) {
@@ -104,7 +109,7 @@ class App {
         }
 
         record BagRule(String name, InternalElement[] elements,
-                              boolean end) implements Function<String, Boolean> {
+                       boolean end) implements Function<String, Boolean> {
             @Override
             public Boolean apply(String bagName) {
                 if (bagName.equals(name())) {
