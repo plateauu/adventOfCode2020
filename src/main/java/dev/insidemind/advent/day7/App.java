@@ -10,6 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toUnmodifiableMap;
+
 /**
  * Day 7 Advent od code 2020
  * https://adventofcode.com/2020/day/7
@@ -19,24 +21,28 @@ class App {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        var shinyBags = partOne();
-        System.out.printf("shiny bags: %d%n", shinyBags);
+        var shinyBagsCount = partOne();
+        System.out.printf("shiny bag can be at: %d bags.%n", shinyBagsCount);
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);
 
     }
 
+    static Map<String, BagRuleParser.BagRule> map;
+
     private static int partOne() {
-        var toFind = "shiny bag";
+        var toFind = "shiny gold";
         var rules = new BagRuleParser(lines).parse();
-        rules.stream().filter(obj -> Objects.isNull(obj.name)).forEach(System.out::println);
-        Map<String, BagRuleParser.BagRule> map = rules.stream().collect(Collectors.toUnmodifiableMap(BagRuleParser.BagRule::name, Function.identity()));
+        map = rules.stream().collect(toUnmodifiableMap(BagRuleParser.BagRule::name, Function.identity()));
 
         int result = 0;
         for (var rule : map.entrySet()) {
-            if (rule.getValue().apply(toFind)) {
+            if (rule.getValue().find(toFind)) {
                 result++;
+                if (rule.getValue().name.equals(toFind)) {
+                    System.out.printf("Shine gold can be at: %s%n", rule.getValue().name);
+                }
             }
         }
         return result;
@@ -104,29 +110,27 @@ class App {
                     .orElse(false);
         }
 
-        record InternalElement(int count, String ruleName) implements Function<String, Boolean> {
-            @Override
-            public Boolean apply(String name) {
-                return ruleName.equals(name);
+        record InternalElement(int count, String ruleName) {
+            Boolean find(String name) {
+                var thisElement = ruleName.equals(name);
+                if (thisElement) return true;
+                return map.get(ruleName).find(name);
             }
         }
 
-        record BagRule(String name, InternalElement[] elements,
-                       boolean end) implements Function<String, Boolean> {
-            @Override
-            public Boolean apply(String bagName) {
-                if (bagName.equals(name())) {
-                    return true;
-                }
+        record BagRule(String name, InternalElement[] elements, boolean end) {
+            Boolean find(String bagName) {
+//                if (bagName.equals(name())) {
+//                    return true;
+//                }
                 for (InternalElement i : elements()) {
-                    if (i.apply(bagName)) {
+                    if (i.find(bagName)) {
                         return true;
                     }
                 }
                 return false;
             }
         }
-
     }
 
     static {
