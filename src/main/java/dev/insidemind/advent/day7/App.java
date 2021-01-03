@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -21,21 +22,28 @@ class App {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        new BagRuleParser(lines).parse();
+        partOne();
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);
 
     }
 
+    private static List<BagRuleParser.BagRule> partOne() {
+        var rules = new BagRuleParser(lines).parse();
+        var map = rules.stream().collect(Collectors.toUnmodifiableMap(BagRuleParser.BagRule::name, Function.identity()));
+
+        return rules;
+    }
+
     static class BagRuleParser {
         public static final Pattern PATTERN = Pattern.compile(
-            "^(\\w+\\W+\\w+){1} bags contain ((\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]" +
-                " (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]|no other bags.)$");
+                "^(\\w+\\W+\\w+){1} bags contain ((\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]" +
+                        " (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]|no other bags.)$");
 
         private final List<String> lines;
 
-         BagRuleParser(List<String> lines) {
+        BagRuleParser(List<String> lines) {
             this.lines = lines;
         }
 
@@ -48,7 +56,6 @@ class App {
         BagRule parse(String line) {
             Matcher matcher = PATTERN.matcher(line);
             int groupCount = matcher.groupCount();
-            var r = new String[groupCount];
             var internals = new InternalElement[groupCount];
             String ruleName = null;
             boolean end = false;
@@ -64,7 +71,6 @@ class App {
                         continue;
                     }
 
-                    r[i] = el;
                     if (el.matches("^\\d.*$")) {
                         var split = el.split(" ", 2);
                         internals[i] = new InternalElement(Integer.parseInt(split[0]), split[1]);
