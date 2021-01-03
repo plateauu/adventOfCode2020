@@ -13,17 +13,17 @@ class AppTest {
                 " 4 shiny coral bags, 3 vibrant crimson bags," +
                 " 2 muted black bags.";
 
-        App.BagParser parser = new App.BagParser(List.of(input));
+        App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
 
-        App.BagParser.Rule rule = parser.parse(input);
+        App.BagRuleParser.BagRule rule = parser.parse(input);
 
         assertNotNull(rule);
         assertEquals("dark aqua", rule.name());
         assertFalse(rule.end());
-        assertEquals(new App.BagParser.InternalElement(1, "dull coral"), rule.elements()[0]);
-        assertEquals(new App.BagParser.InternalElement(4, "shiny coral"), rule.elements()[1]);
-        assertEquals(new App.BagParser.InternalElement(3, "vibrant crimson"), rule.elements()[2]);
-        assertEquals(new App.BagParser.InternalElement(2, "muted black"), rule.elements()[3]);
+        assertEquals(new App.BagRuleParser.InternalElement(1, "dull coral"), rule.elements()[0]);
+        assertEquals(new App.BagRuleParser.InternalElement(4, "shiny coral"), rule.elements()[1]);
+        assertEquals(new App.BagRuleParser.InternalElement(3, "vibrant crimson"), rule.elements()[2]);
+        assertEquals(new App.BagRuleParser.InternalElement(2, "muted black"), rule.elements()[3]);
     }
 
     @Test
@@ -31,10 +31,10 @@ class AppTest {
         //given
         var input = "faded blue bags contain no other bags.";
 
-        App.BagParser parser = new App.BagParser(List.of(input));
+        App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
 
         //when
-        App.BagParser.Rule rule = parser.parse(input);
+        App.BagRuleParser.BagRule rule = parser.parse(input);
 
         //then
         assertNotNull(rule);

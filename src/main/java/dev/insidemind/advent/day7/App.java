@@ -20,28 +20,32 @@ class App {
     static List<String> lines;
 
     public static void main(String[] args) {
-
+        long start = System.currentTimeMillis();
+        new BagRuleParser(lines).parse();
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
 
     }
 
-    static class BagParser {
+    static class BagRuleParser {
         public static final Pattern PATTERN = Pattern.compile(
             "^(\\w+\\W+\\w+){1} bags contain ((\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]" +
                 " (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]|no other bags.)$");
 
         private final List<String> lines;
 
-         BagParser(List<String> lines) {
+         BagRuleParser(List<String> lines) {
             this.lines = lines;
         }
 
-        List<Rule> parse() {
+        List<BagRule> parse() {
             return lines.stream()
                     .map(this::parse)
                     .collect(Collectors.toUnmodifiableList());
         }
 
-        Rule parse(String line) {
+        BagRule parse(String line) {
             Matcher matcher = PATTERN.matcher(line);
             int groupCount = matcher.groupCount();
             var r = new String[groupCount];
@@ -74,14 +78,14 @@ class App {
                     .filter(Objects::nonNull)
                     .toArray(InternalElement[]::new);
 
-            return new Rule(ruleName, boxedInternalElements, end);
+            return new BagRule(ruleName, boxedInternalElements, end);
         }
 
         record InternalElement(int count, String ruleName) {
 
         }
 
-        public record Rule(String name, InternalElement[] elements, boolean end) {
+        public record BagRule(String name, InternalElement[] elements, boolean end) {
         }
 
     }
