@@ -7,9 +7,57 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {
+    @Test
+    void shouldParseRulesWithSingleElement() {
+        var input = "wavy tan bags contain 2 plaid aqua bags.";
+
+        App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
+
+        App.BagRuleParser.BagRule rule = parser.parse(input);
+
+        assertNotNull(rule);
+        assertEquals("wavy tan", rule.name());
+        assertFalse(rule.end());
+        assertEquals(new App.BagRuleParser.InternalElement(2, "plaid aqua"), rule.elements()[0]);
+    }
+
 
     @Test
-    void shouldParseRules() {
+    void shouldParseRulesWith3Elements() {
+        var input = "dark aqua bags contain 1 dull coral bag," +
+                " 4 shiny coral bags," +
+                " 2 muted black bags.";
+
+        App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
+
+        App.BagRuleParser.BagRule rule = parser.parse(input);
+
+        assertNotNull(rule);
+        assertEquals("dark aqua", rule.name());
+        assertFalse(rule.end());
+        assertEquals(new App.BagRuleParser.InternalElement(1, "dull coral"), rule.elements()[0]);
+        assertEquals(new App.BagRuleParser.InternalElement(4, "shiny coral"), rule.elements()[1]);
+        assertEquals(new App.BagRuleParser.InternalElement(2, "muted black"), rule.elements()[2]);
+    }
+
+    @Test
+    void shouldParseRulesWith2Elements() {
+        var input = "dark aqua bags contain 1 dull coral bag," +
+                " 2 muted black bags.";
+
+        App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
+
+        App.BagRuleParser.BagRule rule = parser.parse(input);
+
+        assertNotNull(rule);
+        assertEquals("dark aqua", rule.name());
+        assertFalse(rule.end());
+        assertEquals(new App.BagRuleParser.InternalElement(1, "dull coral"), rule.elements()[0]);
+        assertEquals(new App.BagRuleParser.InternalElement(2, "muted black"), rule.elements()[1]);
+    }
+
+        @Test
+    void shouldParseRulesWith4Elements() {
         var input = "dark aqua bags contain 1 dull coral bag," +
                 " 4 shiny coral bags, 3 vibrant crimson bags," +
                 " 2 muted black bags.";
@@ -25,20 +73,6 @@ class AppTest {
         assertEquals(new App.BagRuleParser.InternalElement(4, "shiny coral"), rule.elements()[1]);
         assertEquals(new App.BagRuleParser.InternalElement(3, "vibrant crimson"), rule.elements()[2]);
         assertEquals(new App.BagRuleParser.InternalElement(2, "muted black"), rule.elements()[3]);
-    }
-
-    @Test
-    void shouldParseRulesWithSingleEquipment() {
-        var input = "wavy tan bags contain 2 plaid aqua bags.";
-
-        App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
-
-        App.BagRuleParser.BagRule rule = parser.parse(input);
-
-        assertNotNull(rule);
-        assertEquals("wavy tan", rule.name());
-        assertFalse(rule.end());
-        assertEquals(new App.BagRuleParser.InternalElement(2, "plaid aqua"), rule.elements()[0]);
     }
 
     @Test
