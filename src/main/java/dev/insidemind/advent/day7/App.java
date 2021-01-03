@@ -17,30 +17,46 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
  * https://adventofcode.com/2020/day/7
  */
 class App {
+    private static final String SHINY_GOLD = "shiny gold";
+
     static List<String> lines;
+    static Map<String, BagRuleParser.BagRule> map;
 
     public static void main(String[] args) {
+        partOne();
+        partTwo();
+    }
+
+    private static void partTwo() {
         long start = System.currentTimeMillis();
-        var shinyBagsCount = partOne();
+        var shinyBagsCount = countBagsInsideShinyGold(SHINY_GOLD);
+        System.out.printf("shiny gold bag must contain: %d bags.%n", shinyBagsCount);
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
+    }
+
+    static long countBagsInsideShinyGold(String name) {
+        return map.get(name).countBags();
+    }
+
+
+    private static void partOne() {
+        long start = System.currentTimeMillis();
+        var shinyBagsCount = countBagsWithShinyGold();
         System.out.printf("shiny bag can be at: %d bags.%n", shinyBagsCount);
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);
-
     }
 
-    static Map<String, BagRuleParser.BagRule> map;
-
-    private static int partOne() {
-        var toFind = "shiny gold";
-        var rules = new BagRuleParser(lines).parse();
-        map = rules.stream().collect(toUnmodifiableMap(BagRuleParser.BagRule::name, Function.identity()));
-
+    private static int countBagsWithShinyGold() {
+        new BagRuleParser(lines).parse();
         int result = 0;
         for (var rule : map.entrySet()) {
-            if (rule.getValue().find(toFind)) {
+            if (rule.getValue().find(SHINY_GOLD)) {
                 result++;
-                if (rule.getValue().name.equals(toFind)) {
+                if (rule.getValue().name.equals(SHINY_GOLD)) {
                     System.out.printf("Shine gold can be at: %s%n", rule.getValue().name);
                 }
             }
@@ -64,9 +80,11 @@ class App {
         }
 
         List<BagRule> parse() {
-            return lines.stream()
+            var rules = lines.stream()
                     .map(this::parse)
                     .collect(Collectors.toUnmodifiableList());
+            map = rules.stream().collect(toUnmodifiableMap(BagRuleParser.BagRule::name, Function.identity()));
+            return rules;
         }
 
         BagRule parse(String line) {
@@ -116,6 +134,14 @@ class App {
                 if (thisElement) return true;
                 return map.get(ruleName).find(name);
             }
+
+            long countBags() {
+                var sum = count() * Arrays.stream(map.get(ruleName()).elements)
+                        .mapToLong(InternalElement::countBags)
+                        .sum();
+                System.out.printf("Inside %s rule. Sum: %d%n", ruleName, sum);
+                return sum;
+            }
         }
 
         record BagRule(String name, InternalElement[] elements, boolean end) {
@@ -129,6 +155,12 @@ class App {
                     }
                 }
                 return false;
+            }
+
+            public long countBags() {
+                var sum = Arrays.stream(elements).mapToLong(InternalElement::countBags).sum();
+                System.out.printf("Inside %s rule. Sum: %d %n", name, sum);
+                return sum;
             }
         }
     }

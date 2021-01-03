@@ -91,4 +91,25 @@ class AppTest {
         assertEquals(rule.elements().length, 0);
         assertTrue(rule.end());
     }
+
+    @Test
+    void shouldCountBags() {
+        //given
+        var input = List.of(
+                "dark aqua bags contain 2 dull coral bags, 1 black coral bags",
+                "dull coral bags contain no other bags",
+                "black coral bags contain 2 red gold bag",
+                "red gold bags contain no other bags"
+        );
+
+        new App.BagRuleParser(input).parse();
+
+        //when
+        var result = App.countBagsInsideShinyGold("dark aqua");
+
+        //then
+        assertNotEquals(0, result);
+        assertEquals(4, result);
+    }
+
 }
