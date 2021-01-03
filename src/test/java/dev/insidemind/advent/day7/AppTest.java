@@ -21,6 +21,21 @@ class AppTest {
         assertEquals(new App.BagRuleParser.InternalElement(2, "plaid aqua"), rule.elements()[0]);
     }
 
+    @Test
+    void shouldParseRulesWith2Elements() {
+        var input = "dark aqua bags contain 1 dull coral bag," +
+                " 2 muted black bags.";
+
+        App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
+
+        App.BagRuleParser.BagRule rule = parser.parse(input);
+
+        assertNotNull(rule);
+        assertEquals("dark aqua", rule.name());
+        assertFalse(rule.end());
+        assertEquals(new App.BagRuleParser.InternalElement(1, "dull coral"), rule.elements()[0]);
+        assertEquals(new App.BagRuleParser.InternalElement(2, "muted black"), rule.elements()[1]);
+    }
 
     @Test
     void shouldParseRulesWith3Elements() {
@@ -40,26 +55,11 @@ class AppTest {
         assertEquals(new App.BagRuleParser.InternalElement(2, "muted black"), rule.elements()[2]);
     }
 
-    @Test
-    void shouldParseRulesWith2Elements() {
-        var input = "dark aqua bags contain 1 dull coral bag," +
-                " 2 muted black bags.";
-
-        App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
-
-        App.BagRuleParser.BagRule rule = parser.parse(input);
-
-        assertNotNull(rule);
-        assertEquals("dark aqua", rule.name());
-        assertFalse(rule.end());
-        assertEquals(new App.BagRuleParser.InternalElement(1, "dull coral"), rule.elements()[0]);
-        assertEquals(new App.BagRuleParser.InternalElement(2, "muted black"), rule.elements()[1]);
-    }
-
         @Test
     void shouldParseRulesWith4Elements() {
         var input = "dark aqua bags contain 1 dull coral bag," +
-                " 4 shiny coral bags, 3 vibrant crimson bags," +
+                " 4 shiny coral bags," +
+                " 3 vibrant crimson bags," +
                 " 2 muted black bags.";
 
         App.BagRuleParser parser = new App.BagRuleParser(List.of(input));
@@ -91,5 +91,4 @@ class AppTest {
         assertEquals(rule.elements().length, 0);
         assertTrue(rule.end());
     }
-
 }

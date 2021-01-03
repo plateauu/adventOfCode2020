@@ -44,8 +44,11 @@ class App {
 
     static class BagRuleParser {
         public static final Pattern PATTERN = Pattern.compile(
-                "^(\\w+\\W+\\w+){1} bags contain ((\\d+\\W+\\w+\\W+\\w+) bags\\.|(\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]" +
-                        " (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]|no other bags.)$");
+                        "^(\\w+\\W\\w+) bags contain ((\\d\\W\\w+\\W\\w+) bags?\\.|" +
+                        "(\\d\\W\\w+\\W\\w+) bags?, (\\d\\W\\w+\\W\\w+) bags?\\.|" +
+                        "(\\d\\W\\w+\\W\\w+) bags?, (\\d\\W\\w+\\W\\w+) bags?, (\\d\\W\\w+\\W\\w+) bags?\\.|" +
+                        "(\\d\\W\\w+\\W\\w+) bags?, (\\d\\W\\w+\\W\\w+) bags?, (\\d\\W\\w+\\W\\w+) bags?, (\\d\\W\\w+\\W\\w+) bags?\\.|" +
+                        "no other bags.)$");
 
         private final List<String> lines;
         public static final Set<String> TO_SKIP_INDICATORS = Set.of(",", ".");
