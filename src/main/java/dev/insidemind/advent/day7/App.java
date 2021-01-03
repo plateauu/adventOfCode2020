@@ -22,23 +22,32 @@ class App {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        partOne();
+        var shinyBags = partOne();
+        System.out.printf("shiny bags: %d", shinyBags);
         long stop = System.currentTimeMillis();
         var time = stop - start;
         System.out.printf("Time spend: %dms%n", time);
 
     }
 
-    private static List<BagRuleParser.BagRule> partOne() {
+    private static int partOne() {
+        var toFind = "shiny bag";
         var rules = new BagRuleParser(lines).parse();
-        var map = rules.stream().collect(Collectors.toUnmodifiableMap(BagRuleParser.BagRule::name, Function.identity()));
+        rules.stream().filter(obj -> Objects.isNull(obj.name)).forEach(System.out::println);
+        Map<String, BagRuleParser.BagRule> map = rules.stream().collect(Collectors.toUnmodifiableMap(BagRuleParser.BagRule::name, Function.identity()));
 
-        return rules;
+        int result = 0;
+        for (var rule : map.entrySet()) {
+            if (rule.getValue().apply(toFind)) {
+                result++;
+            }
+        }
+        return result;
     }
 
     static class BagRuleParser {
         public static final Pattern PATTERN = Pattern.compile(
-                "^(\\w+\\W+\\w+){1} bags contain ((\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]" +
+                "^(\\w+\\W+\\w+){1} bags contain ((\\d+\\W+\\w+\\W+\\w+) bags\\.|(\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]" +
                         " (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.] (\\d+\\W+\\w+\\W+\\w+) bags?[,|\\.]|no other bags.)$");
 
         private final List<String> lines;
@@ -87,11 +96,27 @@ class App {
             return new BagRule(ruleName, boxedInternalElements, end);
         }
 
-        record InternalElement(int count, String ruleName) {
-
+        record InternalElement(int count, String ruleName) implements Function<String, Boolean> {
+            @Override
+            public Boolean apply(String name) {
+                return ruleName.equals(name);
+            }
         }
 
-        public record BagRule(String name, InternalElement[] elements, boolean end) {
+        record BagRule(String name, InternalElement[] elements,
+                              boolean end) implements Function<String, Boolean> {
+            @Override
+            public Boolean apply(String bagName) {
+                if (bagName.equals(name())) {
+                    return true;
+                }
+                for (InternalElement i : elements()) {
+                    if (i.apply(bagName)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
 
     }
