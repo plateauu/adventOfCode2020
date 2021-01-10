@@ -15,13 +15,13 @@ class App {
 
     static List<String> lines;
 
-    public static void main(String[] args) {
-    }
-
-
     static {
         Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day7/input.txt");
         lines = LinesReader.readAllLines(INPUT, Function.identity());
+    }
+
+    public static void main(String[] args) {
+
     }
 
 }
