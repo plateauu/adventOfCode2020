@@ -7,7 +7,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Day 8 Advent od code 2020
@@ -18,7 +19,7 @@ class App {
     static List<String> lines;
 
     static {
-        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day7/input.txt");
+        Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day8/input.txt");
         lines = LinesReader.readAllLines(INPUT, Function.identity());
     }
 
@@ -27,6 +28,7 @@ class App {
     }
 
     static class OperationParser {
+
         private final List<String> lines;
 
         public OperationParser(List<String> lines) {
@@ -34,7 +36,7 @@ class App {
         }
 
         List<Operation> parse() {
-            return lines.stream().map(this::parse).collect(Collectors.toList());
+            return lines.stream().map(this::parse).collect(toList());
         }
 
         private Operation parse(String s) {
