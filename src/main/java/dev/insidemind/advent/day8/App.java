@@ -4,6 +4,7 @@ import dev.insidemind.advent.LinesReader;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,7 +47,26 @@ class App {
 
     }
 
-    record Operation(String op, char sign, int count) {
+    enum OperationType {
+        JMP, ACC, NOP;
+
+        static OperationType type(String from) {
+            return Arrays.stream(values()).filter(v -> v.name().equals(from.toUpperCase())).findAny().orElseThrow();
+        }
+    }
+
+    static class Operation {
+
+         final OperationType type;
+         final char sign;
+         final int count;
+
+        Operation(String op, char sign, int count) {
+            this.type = OperationType.type(op);
+            this.sign = sign;
+            this.count = count;
+        }
+
     }
 
 

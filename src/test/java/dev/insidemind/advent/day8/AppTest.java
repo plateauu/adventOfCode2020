@@ -13,20 +13,20 @@ class AppTest {
 
     @ParameterizedTest
     @MethodSource({"input"})
-    void shouldParseOperation(String line, String expectedOperation, char expectedSign, int expectedCount) {
+    void shouldParseOperation(String line, App.OperationType expectedOperation, char expectedSign, int expectedCount) {
         //expect
         var parsed = new App.OperationParser(List.of(line)).parse();
         assertEquals(1, parsed.size());
-        assertEquals(expectedOperation, parsed.get(0).op());
-        assertEquals(expectedSign, parsed.get(0).sign());
-        assertEquals(expectedCount, parsed.get(0).count());
+        assertEquals(expectedOperation, parsed.get(0).type);
+        assertEquals(expectedSign, parsed.get(0).sign);
+        assertEquals(expectedCount, parsed.get(0).count);
     }
 
     private static Stream<Arguments> input() {
         return Stream.of(
-                Arguments.of("nop +283", "nop", '+', 283),
-                Arguments.of("acc +26", "acc", '+', 26),
-                Arguments.of("jmp -269", "jmp", '-', 269)
+                Arguments.of("nop +283", App.OperationType.NOP, '+', 283),
+                Arguments.of("acc +26", App.OperationType.ACC, '+', 26),
+                Arguments.of("jmp -269", App.OperationType.JMP, '-', 269)
         );
     }
 }
