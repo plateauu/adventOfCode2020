@@ -5,7 +5,6 @@ import dev.insidemind.advent.LinesReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Function;
@@ -38,29 +37,30 @@ class App {
         System.out.printf("Time spend: %dms%n", time);
     }
 
-    private static class OperationMove {
-        private final Map<Operation, Integer> processed;
-        private final List<Operation> operations;
-        private final AtomicLong index = new AtomicLong();
-        private final LongAccumulator accumulator;
+     static class OperationMove {
+         private final Map<Operation, Integer> processed;
+         private final List<Operation> operations;
+         private final AtomicLong index = new AtomicLong();
+         private final LongAccumulator accumulator;
 
-        public OperationMove(List<Operation> operations) {
-            this.operations = operations;
-            this.processed = new HashMap<>();
-            this.accumulator = new LongAccumulator(Long::sum, 0);
-        }
+         public OperationMove(List<Operation> operations) {
+             this.operations = operations;
+             this.processed = new HashMap<>();
+             this.accumulator = new LongAccumulator(Long::sum, 0);
+         }
 
-        void go() {
-            int counter = 0;
-            while (true) {
-                counter++;
-                try {
-                    System.out.printf("counter value: %d%n", counter);
-                    move();
-                } catch (RuntimeException exception) {
-                    throw exception;
-                }
-            }
+         long go() {
+             int counter = 0;
+             while (true) {
+                 counter++;
+                 try {
+                     System.out.printf("counter value: %d%n", counter);
+                     move();
+                 } catch (RuntimeException exception) {
+                     break;
+                 }
+             }
+             return accumulator.get();
         }
 
         void move() {
@@ -75,23 +75,32 @@ class App {
             index.set(operations.indexOf(operation));
 
             switch (operation.type) {
-                case ACC -> operation.acc(accumulator);
+                case ACC -> {
+                    operation.acc(accumulator);
+                    incrementIndex();
+                }
                 case JMP -> operation.jump(index);
-                case NOP -> operation.nop();
+                case NOP -> {
+                    operation.nop();
+                    incrementIndex();
+                }
             }
 
-            index.incrementAndGet();
         }
 
-        private Operation next(AtomicLong idx) {
-            var operation = operations.get(Math.toIntExact(idx.get()));
-            if (processed.containsKey(operation)) {
-                processed.computeIfPresent(operation, (k, v) -> v++);
-                throw new RuntimeException("Operation second execution: " + operation.id);
-            }
-            processed.putIfAbsent(operation, 0);
-            return operation;
-        }
+         private void incrementIndex() {
+             index.incrementAndGet();
+         }
+
+         private Operation next(AtomicLong idx) {
+             var operation = operations.get(Math.toIntExact(idx.get()));
+             if (processed.containsKey(operation)) {
+                 processed.computeIfPresent(operation, (k, v) -> v++);
+                 throw new RuntimeException("Operation second execution: " + operation.id);
+             }
+             processed.putIfAbsent(operation, 0);
+             return operation;
+         }
     }
 
     static class OperationParser {
