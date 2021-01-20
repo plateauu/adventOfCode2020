@@ -9,6 +9,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Function;
 
+import static dev.insidemind.advent.day8.App.OperationType.*;
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -18,15 +21,15 @@ import static java.util.stream.Collectors.toList;
 class App {
 
     static List<String> lines;
+    static Set<Integer> visitedOperations = new HashSet<>();
+    static List<Operation> original;
 
     static {
         Path INPUT = Paths.get("src/main/java/dev/insidemind/advent/day8/input.txt");
         lines = LinesReader.readAllLines(INPUT, Function.identity());
     }
 
-    public static void main(String[] args) {
-        partOne();
-    }
+    static AtomicLong count = new AtomicLong();
 
     private static void partOne() {
         long start = System.currentTimeMillis();
@@ -37,41 +40,57 @@ class App {
         System.out.printf("Time spend: %dms%n", time);
     }
 
-     static class OperationMove {
-         private final Map<Operation, Integer> processed;
-         private final List<Operation> operations;
-         private final AtomicLong index = new AtomicLong();
-         private final LongAccumulator accumulator;
+    public static void main(String[] args) {
+        partOne();
+        partTwo();
+    }
 
-         public OperationMove(List<Operation> operations) {
-             this.operations = operations;
-             this.processed = new HashMap<>();
-             this.accumulator = new LongAccumulator(Long::sum, 0);
-         }
+    private static void partTwo() {
+        long start = System.currentTimeMillis();
+        var operations = new OperationParser(lines).parse();
+        var value = new OperationMove(operations).goWithSwap();
+        System.out.printf("Accumulator value: %s", value);
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
+    }
 
-         long go() {
-             int counter = 0;
-             while (true) {
-                 counter++;
-                 try {
-                     System.out.printf("counter value: %d%n", counter);
-                     move();
-                 } catch (RuntimeException exception) {
-                     break;
-                 }
-             }
-             return accumulator.get();
+    static class OperationMove {
+        static Operation lastOperation;
+        private final Map<Operation, Integer> processed;
+        private final List<Operation> operations;
+        private final AtomicLong index = new AtomicLong();
+        private final LongAccumulator accumulator;
+
+        public OperationMove(List<Operation> operations) {
+            this.operations = operations;
+            this.processed = new HashMap<>();
+            this.accumulator = new LongAccumulator(Long::sum, 0);
         }
 
-        void move() {
-            Operation operation;
+        long go() {
+            for (Operation operation : operations) {
+                try {
+                    move(operation);
+                } catch (RuntimeException exception) {
+                    break;
+                }
+            }
+            return accumulator.get();
+        }
+
+        void move(Operation operation) {
             try {
-                operation = next(index);
+                validate(operation);
             } catch (RuntimeException ex) {
                 System.out.printf("Doubled execution of operation. Accumulator value: %d%n", accumulator.get());
-                throw ex;
+                if (visitedOperations.contains(operations.indexOf(operation)))
+                    throw ex;
             }
+            proceedOperation(operation);
+        }
 
+        private void proceedOperation(Operation operation) {
             index.set(operations.indexOf(operation));
 
             switch (operation.type) {
@@ -85,22 +104,51 @@ class App {
                     incrementIndex();
                 }
             }
-
         }
 
-         private void incrementIndex() {
-             index.incrementAndGet();
-         }
+        private void incrementIndex() {
+            index.incrementAndGet();
+        }
 
-         private Operation next(AtomicLong idx) {
-             var operation = operations.get(Math.toIntExact(idx.get()));
-             if (processed.containsKey(operation)) {
-                 processed.computeIfPresent(operation, (k, v) -> v++);
-                 throw new RuntimeException("Operation second execution: " + operation.id);
-             }
-             processed.putIfAbsent(operation, 0);
-             return operation;
-         }
+        private Operation validate(Operation operation) {
+            if (processed.containsKey(operation)) {
+                processed.computeIfPresent(operation, (k, v) -> v++);
+                throw new OperationDoubledException(operation);
+            }
+            processed.putIfAbsent(operation, 0);
+            return operation;
+        }
+
+        long goWithSwap() {
+            index.set(0);
+            while (true) {
+                var index = Math.toIntExact(this.index.get());
+                if(index==operations.size()-1)
+                    break;
+                visitedOperations.add(index);
+                var operation = operations.get(index);
+                try {
+                    move(operation);
+                } catch (OperationDoubledException exception) {
+                    var invokedTwice = exception.doubled;
+                    var invokedTwiceOperationIndex = operations.indexOf(invokedTwice);
+                    var previousOperationIndex = Math.max(invokedTwiceOperationIndex - 1, 0);
+                    var previousOperation = operations.get(previousOperationIndex);
+                    previousOperation.type = swap(previousOperation);
+                    return new OperationMove(operations).goWithSwap();
+                }
+            }
+            return accumulator.get();
+        }
+
+        private OperationType swap(Operation doubced) {
+            lastOperation = doubced;
+            return switch (doubced.type) {
+                case NOP -> JMP;
+                case ACC -> ACC;
+                case JMP -> NOP;
+            };
+        }
     }
 
     static class OperationParser {
@@ -133,16 +181,25 @@ class App {
         }
     }
 
+    private static class OperationDoubledException extends RuntimeException {
+        Operation doubled;
+
+        public OperationDoubledException(Operation doubled) {
+            super(format("Operation with id %s breaks a program execution. %n", doubled.id));
+            this.doubled = doubled;
+        }
+    }
+
     static class Operation {
 
-        final OperationType type;
+        final long id;
         final char sign;
         final int count;
-        final UUID id;
+        OperationType type;
 
         Operation(String op, char sign, int count) {
-            this.id = UUID.randomUUID();
-            this.type = OperationType.type(op);
+            this.id = App.count.getAndIncrement();
+            this.type = type(op);
             this.sign = sign;
             this.count = count;
         }
@@ -152,7 +209,7 @@ class App {
         }
 
         private long parse() {
-            return Long.parseLong(String.valueOf(this.sign) + this.count);
+            return Long.parseLong(valueOf(this.sign) + this.count);
         }
 
         public void jump(AtomicLong index) {
