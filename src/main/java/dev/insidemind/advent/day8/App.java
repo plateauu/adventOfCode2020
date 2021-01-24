@@ -58,23 +58,13 @@ class App {
             processedOrdered.clear();
             accumulator.reset();
             index.set(0);
-            int counter = 0;
             while (true) {
-                counter++;
                 try {
                     move();
+                    if (operations.size() == processed.size()) {
+                        break;
+                    }
                 } catch (RuntimeException exception) {
-                    System.out.printf("counter value: %d%n", counter);
-                    System.out.printf("index value: %d%n", index.get());
-                    if (previous(index) < operations.size() && previous(index) > 0) {
-                        System.out.printf("element #%d is: %s%n", previous(index), operations.get(previous(index)));
-                    }
-                    if (index(index) < operations.size() && index(index) > 0) {
-                        System.out.printf("element #%d is: %s%n", index(index), operations.get(index(index)));
-                    }
-                    if (nextEl(index) < operations.size() && nextEl(index) > 0) {
-                        System.out.printf("element #%d is: %s%n", nextEl(index), operations.get(nextEl(index)));
-                    }
                     rollback();
                     swap(inCatch);
                     inCatch++;
