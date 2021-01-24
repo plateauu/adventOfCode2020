@@ -41,16 +41,19 @@ class App {
     static class OperationMove {
         private final Map<Operation, Integer> processed;
         private final List<Operation> operations;
+        private final Operation terminalOperation;
         private final AtomicLong index = new AtomicLong();
         private final LongAccumulator accumulator;
         List<Operation> processedOrdered = new ArrayList<>();
         private Operation lastSwap;
         private int inCatch;
+        private boolean terminal=false;
 
         public OperationMove(List<Operation> operations) {
             this.operations = operations;
             this.processed = new HashMap<>();
             this.accumulator = new LongAccumulator(Long::sum, 0);
+            this.terminalOperation = operations.get(operations.size() - 1);
         }
 
         long goWithSwap() {
@@ -65,6 +68,9 @@ class App {
                         break;
                     }
                 } catch (RuntimeException exception) {
+                    if (terminal) {
+                        break;
+                    }
                     rollback();
                     swap(inCatch);
                     inCatch++;
@@ -122,9 +128,7 @@ class App {
                 System.out.printf("Doubled execution of operation. Accumulator value: %d%n", accumulator.get());
                 throw ex;
             }
-
             index.set(operations.indexOf(operation));
-
             switch (operation.type) {
                 case ACC -> {
                     operation.acc(accumulator);
@@ -136,12 +140,12 @@ class App {
                     incrementIndex();
                 }
             }
-
         }
 
         private Operation next(AtomicLong idx) {
             var operation = operations.get(index(idx));
             processedOrdered.add(operation);
+            terminal = terminalOperation == operation;
             if (processed.containsKey(operation)) {
                 processed.computeIfPresent(operation, (k, v) -> v++);
                 throw new RuntimeException("Operation second execution: " + operation.id);
