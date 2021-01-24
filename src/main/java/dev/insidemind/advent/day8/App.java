@@ -27,9 +27,19 @@ class App {
 
     public static void main(String[] args) {
         partOne();
+        partTwo();
     }
 
     private static void partOne() {
+        long start = System.currentTimeMillis();
+        var operations = new OperationParser(lines).parse();
+        new OperationMove(operations).go();
+        long stop = System.currentTimeMillis();
+        var time = stop - start;
+        System.out.printf("Time spend: %dms%n", time);
+    }
+
+    private static void partTwo() {
         long start = System.currentTimeMillis();
         var operations = new OperationParser(lines).parse();
         new OperationMove(operations).goWithSwap();
@@ -44,29 +54,34 @@ class App {
         private final Operation terminalOperation;
         private final AtomicLong index = new AtomicLong();
         private final LongAccumulator accumulator;
-        List<Operation> processedOrdered = new ArrayList<>();
+        private final List<Operation> processedOrdered = new ArrayList<>();
         private Operation lastSwap;
         private int inCatch;
         private boolean terminal=false;
 
-        public OperationMove(List<Operation> operations) {
+         OperationMove(List<Operation> operations) {
             this.operations = operations;
             this.processed = new HashMap<>();
             this.accumulator = new LongAccumulator(Long::sum, 0);
             this.terminalOperation = operations.get(operations.size() - 1);
         }
 
-        long goWithSwap() {
-            processed.clear();
-            processedOrdered.clear();
-            accumulator.reset();
-            index.set(0);
+        long go() {
             while (true) {
                 try {
                     move();
-                    if (operations.size() == processed.size()) {
-                        break;
-                    }
+                } catch (RuntimeException exception) {
+                    break;
+                }
+            }
+            return accumulator.get();
+        }
+
+        long goWithSwap() {
+            reset();
+            while (true) {
+                try {
+                    move();
                 } catch (RuntimeException exception) {
                     if (terminal) {
                         break;
@@ -81,25 +96,18 @@ class App {
             return accumulator.get();
         }
 
+        private void reset() {
+            processed.clear();
+            processedOrdered.clear();
+            accumulator.reset();
+            index.set(0);
+        }
+
         private void rollback() {
             if (lastSwap == null)
                 return;
             doSwap(lastSwap);
             lastSwap = null;
-        }
-
-        long go() {
-            int counter = 0;
-            while (true) {
-                counter++;
-                try {
-                    System.out.printf("counter value: %d%n", counter);
-                    move();
-                } catch (RuntimeException exception) {
-                    break;
-                }
-            }
-            return accumulator.get();
         }
 
         private void swap(int inCatch) {
@@ -124,8 +132,8 @@ class App {
             Operation operation;
             try {
                 operation = next(index);
-            } catch (RuntimeException ex) {
-                System.out.printf("Doubled execution of operation. Accumulator value: %d%n", accumulator.get());
+            } catch (DoubleExecutionException ex) {
+                System.out.printf("Doubled execution of operation. Accumulator value: %d. Infinite-loop operation: %s%n", accumulator.get(), ex.operation);
                 throw ex;
             }
             index.set(operations.indexOf(operation));
@@ -145,25 +153,31 @@ class App {
         private Operation next(AtomicLong idx) {
             var operation = operations.get(index(idx));
             processedOrdered.add(operation);
-            terminal = terminalOperation == operation;
+            terminal = isTerminal(operation);
             if (processed.containsKey(operation)) {
                 processed.computeIfPresent(operation, (k, v) -> v++);
-                throw new RuntimeException("Operation second execution: " + operation.id);
+                throw new DoubleExecutionException(operation);
             }
             processed.putIfAbsent(operation, 0);
             return operation;
         }
 
+        static class DoubleExecutionException extends RuntimeException {
+            private static final String msg = "Operation second execution: %s%n";
+            Operation operation;
+
+            public DoubleExecutionException(Operation operation) {
+                super(String.format(msg, operation.id));
+                this.operation = operation;
+            }
+        }
+
+        private boolean isTerminal(Operation operation) {
+            return terminalOperation == operation;
+        }
+
         private void incrementIndex() {
             index.incrementAndGet();
-        }
-
-        private static int previous(AtomicLong index) {
-            return Math.toIntExact(index.get() - 1L);
-        }
-
-        private static int nextEl(AtomicLong index) {
-            return Math.toIntExact(index.get() + 1L);
         }
 
         private static int index(AtomicLong index) {
@@ -172,10 +186,9 @@ class App {
     }
 
     static class OperationParser {
-
         private final List<String> lines;
 
-        public OperationParser(List<String> lines) {
+        OperationParser(List<String> lines) {
             this.lines = lines;
         }
 
@@ -190,19 +203,16 @@ class App {
             var count = Integer.parseInt(operation[1].substring(1));
             return new Operation(op, sign, count);
         }
-
     }
 
     enum OperationType {
         JMP, ACC, NOP;
-
         static OperationType type(String from) {
             return Arrays.stream(values()).filter(v -> v.name().equals(from.toUpperCase())).findAny().orElseThrow();
         }
     }
 
     static class Operation {
-
         OperationType type;
         final char sign;
         final int count;
@@ -242,6 +252,4 @@ class App {
                     '}';
         }
     }
-
-
 }
